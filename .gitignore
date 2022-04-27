@@ -1,0 +1,7 @@
+.idea
+CMakeList*
+bin/
+all
+librknnx_api.so
+cmake-build-debug
+

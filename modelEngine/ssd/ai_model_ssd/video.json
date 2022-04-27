@@ -1,0 +1,14 @@
+{
+	"rknn":	{
+		"InputSize":    416,
+		"NumResults":	3462,
+		"NumClass":	3,
+		"CropType":     3,
+		"ImgCollect":1,
+		"ModelAlgType":"ssd",
+		"ModelFunction": "targetDetetct",
+		"ModelPath":	"./ssd_mobv2_416_qu_16970.rknn",
+		"Priorsbox":	"./box_priors.txt",
+		"Labelsmap":	"./labels.txt"
+	}
+}

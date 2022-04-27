@@ -1,0 +1,14 @@
+{
+	"rknn":	{
+		"InputSize":    320,
+		"NumResults":	0,
+		"NumClass":	1,
+		"CropType":     3,
+		"ImgCollect": 1,
+		"ModelFunction": "targetDetetct",
+		"ModelAlgType":"yolo",
+		"ModelPath":	"./yolov4-tiny_qu320.rknn",
+		"Priorsbox":	"./Config320_p.ini",
+		"Labelsmap":	"./labels_p.txt"
+	}
+}

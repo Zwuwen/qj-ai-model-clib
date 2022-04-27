@@ -1,0 +1,14 @@
+{
+	"rknn":	{
+		"InputSize":    640,
+		"NumResults":	0,
+		"NumClass":	   8,
+		"CropType":     3,
+		"ImgCollect": 0,
+		"ModelAlgType":"built-in",
+		"ModelFunction": "targetDetetct",
+		"ModelPath":	"BodyPosture",
+		"Priorsbox":	"./Config.ini",
+		"Labelsmap":	"./labels.txt"
+	}
+}
