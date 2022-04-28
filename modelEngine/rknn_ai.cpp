@@ -180,39 +180,40 @@ RknnRet rknn_ai::init_model_engine()
 	//根据不同模型属性进行不同处理：模型初始化引擎
 	ret = RKNN_ERR;
 	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
-	if(strcmp(m_rknnData.modelAlgType.c_str(), SSD) == 0)
-	{
-		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cssd_engine());
-		ret = m_aiEngine_api->RknnInit(&m_rknnData);
-	}
-
-	if(strcmp(m_rknnData.modelAlgType.c_str(), Yolo) == 0)
-	{
-		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cyolo_engine());
-		ret = m_aiEngine_api->RknnInit(&m_rknnData);
-	}
+//	if(strcmp(m_rknnData.modelAlgType.c_str(), SSD) == 0)
+//	{
+//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cssd_engine());
+//		ret = m_aiEngine_api->RknnInit(&m_rknnData);
+//	}
+//
+//	if(strcmp(m_rknnData.modelAlgType.c_str(), Yolo) == 0)
+//	{
+//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cyolo_engine());
+//		ret = m_aiEngine_api->RknnInit(&m_rknnData);
+//	}
 
 	if(strcmp(m_rknnData.modelAlgType.c_str(), GddModel) == 0)
 	{
-		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cgdd_engine());
+//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cgdd_engine());
+        m_aiEngine_api = (new cgdd_engine());
 		ret = m_aiEngine_api->RknnInit(&m_rknnData);
 	}
 
-	if(strcmp(m_rknnData.modelAlgType.c_str(), HikangModel) == 0)
-	{
-		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new chik_engine());
-		ret = m_aiEngine_api->RknnInit(&m_rknnData);
-	}
-
-	// 内部算法
-	if (strcmp(m_rknnData.modelAlgType.c_str(), BuiltIn)==0)
-	{
-		if(strcmp(m_rknnData.modelPath.c_str(), BodyPosture)==0)
-		{
-			m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cpose_engine());
-			ret = m_aiEngine_api->RknnInit(&m_rknnData);
-		}
-	}
+//	if(strcmp(m_rknnData.modelAlgType.c_str(), HikangModel) == 0)
+//	{
+//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new chik_engine());
+//		ret = m_aiEngine_api->RknnInit(&m_rknnData);
+//	}
+//
+//	// 内部算法
+//	if (strcmp(m_rknnData.modelAlgType.c_str(), BuiltIn)==0)
+//	{
+//		if(strcmp(m_rknnData.modelPath.c_str(), BodyPosture)==0)
+//		{
+//			m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cpose_engine());
+//			ret = m_aiEngine_api->RknnInit(&m_rknnData);
+//		}
+//	}
 
 	return ret;
 }
@@ -221,7 +222,7 @@ RknnRet rknn_ai::init_model_engine()
 char* rknn_ai::model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, char* imageBufType,char* taskID)
 {
 			
-	detect_result_group_t detect_result_group={0};
+	detect_result_group_t detect_result_group{};
 
 	cv::Mat image;      //the src image 
 	cv::Mat inputImag;  //the image put into model
@@ -300,9 +301,13 @@ char* rknn_ai::model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, 
 RknnRet rknn_ai::deInint_model_engine()
 {
 	RknnRet ret = RKNN_ERR;
+	
 	//根据不同模型属性进行不同处理：模型初始化引擎
 	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
-	ret = m_aiEngine_api->RknnDeinit();
+    if(m_aiEngine_api)
+        ret = m_aiEngine_api->RknnDeinit();
+
+    delete m_aiEngine_api;
 
 	return ret;
 }

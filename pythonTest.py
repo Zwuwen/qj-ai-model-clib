@@ -29,6 +29,7 @@ def creatModelEng(modelType, threshold, modelEngPidList):
         else:
             modelEngPidList.append(modelEngPid1)
             print("modelEngPid1:", modelEngPid1)
+        # modelEngPidList.append(modelEngPid1)
 
     if modelType == "yolo" or modelType == "all":
         modelEngPid2 = aiLib.creat_rknn_model_engine("./yolo".encode(), threshold)
@@ -68,15 +69,19 @@ def creatModelEng(modelType, threshold, modelEngPidList):
             print("modelEngPid5:", modelEngPid5)
 
 
-def del_model_engine(model_engine_id):
-    print(f'del_model_engine({model_engine_id})')
+#
+def deleteModelEng(modelEngPidList):
+    # 3)释放识别引擎 delete_rknn_model_engine 函数
+    # 说明
     aiLib.delete_rknn_model_engine.restype = c_int
     aiLib.delete_rknn_model_engine.argtypes = [c_void_p]
-    ret = aiLib.delete_rknn_model_engine(model_engine_id)
-    if ret < 0:
-        print("delete rknn model error:,", model_engine_id)
-    else:
-        print("delete rknn model success:", model_engine_id)
+
+    for engIndex in range(len(modelEngPidList)):
+        ret = aiLib.delete_rknn_model_engine(modelEngPidList[engIndex])
+        if ret < 0:
+            print("delete rknn model error:,", modelEngPidList[engIndex])
+        else:
+            print("delete rknn model success:", modelEngPidList[engIndex])
 
 
 #
@@ -97,8 +102,8 @@ def imageDetection(cameraIndex, modelEngPidList):
     aiLib.rknn_model_engine_inference.argtypes = [c_void_p, c_char_p, c_uint32, c_char_p, c_char_p]
 
     count = 0
-    while 1:
-        for index in range(1):
+    while (1):
+        for index in range(7):
             imagePath = "./%s.jpg" % (index + 1)
             with open(imagePath, 'rb') as f:
                 imageBuf = f.read()
@@ -128,7 +133,7 @@ def imageDetection(cameraIndex, modelEngPidList):
                         print("resultData:", resultData)
         # break
         count = count + 1
-        if count > 1:
+        if count > 10:
             break
         time.sleep(1)
 
@@ -138,23 +143,25 @@ if __name__ == '__main__':
     # 加载库文件
     aiLib = cdll.LoadLibrary("/usr/lib/librknnx_api.so")
     modelEngPidList = []
-    for i in range(2):
+
+    for i in range(4):
         print("start=========================================================", i)
         # 1）初始化模型引擎
-        # modelType = "all"  # gdd yolo ssd pose hik
         modelType = "gdd"  # gdd yolo ssd pose hik
         threshold = c_float(1)
         threshold.value = 0.5
         print("creatModelEng")
         creatModelEng(modelType, threshold, modelEngPidList)
+
         # 2)
         print("imageDetection")
         cameraIndex = 1
         creatCameraThread(cameraIndex, modelEngPidList)
-        # 3)
-        print("end=========================================================", i)
-    print(f'thread_list0:{thread_list},pidList:{modelEngPidList}')
+
+        # # 3)
+        # print("deleteModelEng")
+        # deleteModelEng(modelEngPidList)
+
     [thd.join() for thd in thread_list]
-    print(f'thread_list1:{thread_list},pidList:{modelEngPidList}')
-    [del_model_engine(id) for id in modelEngPidList]
-    modelEngPidList.clear()
+    [deleteModelEng([pid]) for pid in modelEngPidList]
+    print("end=========================================================", i)

@@ -1,12 +1,26 @@
 #include "ai_rknnx_api.h"
+static rknn_ai * to_delete = NULL;
 extern "C"{
 	//==================================================================================
-	rknn_ai* creat_rknn_model_engine(char* modelUrl,float threshold)
+	void * creat_rknn_model_engine(char* modelUrl,float threshold)
 	{
-		return new rknn_ai(modelUrl,threshold);
+        auto rknnEngine = new rknn_ai(modelUrl,threshold);
+        cout<<"rknnEngine_new:"<<rknnEngine<<endl;
+//        return new rknn_ai(modelUrl,threshold);
+        to_delete = rknnEngine;
+        return rknnEngine;
 	}
 
-	RknnRet init_rknn_model_engine(rknn_ai* rknnEngine)
+//    void * creat_rknn_model_engine(char* modelUrl,float threshold)
+//    {
+//        auto rknnEngine = new GOO();
+//        cout<<"rknnEngine_new:"<<rknnEngine<<endl;
+//    //        return new rknn_ai(modelUrl,threshold);
+//        to_delete = rknnEngine;
+//        return rknnEngine;
+//    }
+//==================================================================================
+RknnRet init_rknn_model_engine(rknn_ai* rknnEngine)
 	{
 		if(rknnEngine==NULL)
 		{
@@ -31,16 +45,24 @@ extern "C"{
 	}
 
 
-	RknnRet delete_rknn_model_engine(rknn_ai* rknnEngine)
+	RknnRet delete_rknn_model_engine(void* rknnEngine)
 	{
-		if(rknnEngine==nullptr)
+		if(rknnEngine==NULL)
 		{
 			return RKNN_ERR;
 		}else
 		{
-			RknnRet ret = rknnEngine->deInint_model_engine();
-			delete rknnEngine;
-			return ret;
+//			RknnRet ret = rknnEngine->deInint_model_engine();
+//            cout<<"rknnEngine_delete:"<<rknnEngine<<endl;
+//			delete rknnEngine;
+//			return ret;
+//            return RKNN_SUCCESS;
+			RknnRet ret = ((rknn_ai*)rknnEngine)->deInint_model_engine();
+            cout<<"rknnEngine_delete1:"<<rknnEngine<<endl;
+            cout<<"to_delete:"<<to_delete<<endl;
+			delete ((rknn_ai *)rknnEngine);
+//            delete to_delete;
+			return RKNN_SUCCESS;
 		}
 		return RKNN_ERR;
 	}

@@ -6,6 +6,9 @@
 //编解码方法抽象类
 class aiEngine_api
 {
+public:
+    aiEngine_api()= default;;
+   virtual ~aiEngine_api()= default;;
 protected:
     RknnDatas m_rknnData;
 public:
@@ -16,5 +19,6 @@ public:
     //引擎推理
     virtual RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID)= 0;
 };
+
 
 #endif // __AI_ENGINE_API_H__

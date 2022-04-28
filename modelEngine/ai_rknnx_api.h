@@ -10,14 +10,15 @@ extern "C"{
           * return: rknn_ai*
           * des: create rknn model engine
      *****************************/
-     rknn_ai* creat_rknn_model_engine(char* modelUrl,float threshold);
+//     rknn_ai* creat_rknn_model_engine(char* modelUrl,float threshold);
+void* creat_rknn_model_engine(char* modelUrl,float threshold);
 
-     /****************************
-          * func: init_rknn_model_engine
-          * param:rknnEngine[input]: the pointer of rknn recognition  engine
-          * return: the result of detection result 
-          * des: init rknn model engine
-     *****************************/
+/****************************
+     * func: init_rknn_model_engine
+     * param:rknnEngine[input]: the pointer of rknn recognition  engine
+     * return: the result of detection result
+     * des: init rknn model engine
+*****************************/
      RknnRet init_rknn_model_engine(rknn_ai* rknnEngine);
 
      /****************************
@@ -38,7 +39,7 @@ extern "C"{
           * return: RknnRet
           * des: delete the rknn model engine
      *****************************/
-     RknnRet delete_rknn_model_engine(rknn_ai* rknnEngine);
+     RknnRet delete_rknn_model_engine(void* rknnEngine);
 }
 
 #endif

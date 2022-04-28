@@ -45,22 +45,22 @@ typedef enum
 #define OBJ_NAME_MAX_SIZE 32
 #define OBJ_NUMB_MAX_SIZE 64
 
-typedef struct _BOX_RECT {
+typedef struct BOX_RECT {
   int left;
   int right;
   int top;
   int bottom;
 } BOX_RECT;
 
-typedef struct __detect_result_t {
+typedef struct detect_result_t {
   char name[OBJ_NAME_MAX_SIZE]= { '\0' };
-  BOX_RECT box;
-  float prop;
+  BOX_RECT box{};
+  float prop{};
 } detect_result_t;
 
-typedef struct _detect_result_group_t {
-    int count;
-    detect_result_t results[OBJ_NUMB_MAX_SIZE];
+typedef struct detect_result_group_t {
+    int count{};
+    detect_result_t results[OBJ_NUMB_MAX_SIZE]{};
 } detect_result_group_t;
 
 typedef struct 
@@ -69,19 +69,38 @@ typedef struct
 	  rknn_tensor_attr outputs_attr[3];
 } rknn_output_attr;
 
-typedef struct
+typedef struct RknnDatas
 {
-	float threshold=0;       //obj score threshold
-	// rknn model info
-	int inputSize=0;
-	int numResults=0;        //NUM_RESULTS         10407
-	int numClass=0;          //NUM_CLASS			2
+    RknnDatas()=default;
+    RknnDatas(const RknnDatas& other){
+        copy(other);
+    }
+    RknnDatas& operator=(const RknnDatas&other){
+        copy(other);
+    }
+    void copy(const RknnDatas& other ){
+        threshold = other.threshold;
+        inputSize = other.inputSize;
+        numResults = other.numResults;
+        numClass =  other.numClass;
 
-	string modelDir="";       //  model URL
-	string jsonPath="";       //  video.json  full path
-	string modelPath="";      //  .rknn  full path
-	string labelPath="";      //  label.txt  full path
-	string priboxPath="";     //  pribox.txt  full path
-	string modelAlgType="";   //  ssd、yolo、built-in 、GddModel、HikangModel
+        modelDir = other.modelDir;       //  model URL
+        jsonPath = other.jsonPath;       //  video.json  full path
+        modelPath = other.modelPath;      //  .rknn  full path
+        labelPath = other.labelPath;      //  label.txt  full path
+        priboxPath = other.priboxPath;     //  pribox.txt  full path
+        modelAlgType = other.modelAlgType;   //  ssd、yolo、built-in 、GddModel、HikangModel
+    }
+	float threshold{};       //obj score threshold
+	int inputSize{};
+	int numResults{};        //NUM_RESULTS         10407
+	int numClass{};          //NUM_CLASS			2
+
+	string modelDir;       //  model URL
+	string jsonPath;       //  video.json  full path
+	string modelPath;      //  .rknn  full path
+	string labelPath;      //  label.txt  full path
+	string priboxPath;     //  pribox.txt  full path
+	string modelAlgType;   //  ssd、yolo、built-in 、GddModel、HikangModel
 }RknnDatas;
 //===========================================================================================

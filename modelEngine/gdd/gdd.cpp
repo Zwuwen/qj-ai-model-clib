@@ -2,12 +2,12 @@
 
 cgdd_engine::cgdd_engine()
 {
-	m_alg_impl = nullptr;
+	m_alg_impl = NULL;
 }
 
 cgdd_engine::~cgdd_engine()
 {
-	RknnDeinit();
+//	RknnDeinit();
 }
 
 // gdd 模型初始化
@@ -15,8 +15,9 @@ RknnRet cgdd_engine::RknnInit(RknnDatas *pRknn)
 {
 	if(pRknn==NULL) {return RKNN_ERR ;}
 	//1、辅助模型数据
-	memcpy(&m_rknnData, pRknn,sizeof(RknnDatas));
-	
+//	memcpy(&m_rknnData, pRknn,sizeof(RknnDatas));
+    m_rknnData = *pRknn;
+
 	// 模型输入尺寸
 	int MODEL_INPUT_SIZE =m_rknnData.inputSize;
 	// 模型识别类个数
@@ -30,7 +31,8 @@ RknnRet cgdd_engine::RknnInit(RknnDatas *pRknn)
 
 	//2 共达地模型初始化识别引擎
 	m_alg_impl = new AlgImpl();
-	//初始化实例
+    cout<<"m_alg_impl_new:"<<m_alg_impl<<endl;
+    //初始化实例
 	ret = m_alg_impl->Init(0, std::string(m_rknnData.priboxPath),std::string(m_rknnData.modelPath),1);
 	if(ret != GDDI_SUCCESS)
 	{
@@ -49,6 +51,7 @@ RknnRet cgdd_engine::RknnDeinit()
 	printf("RknnDeinit gdd ------------------------------------\n");
 	if(m_alg_impl!=NULL)
 	{
+        cout<<"m_alg_impl_delete:"<<m_alg_impl<<endl;
 		delete m_alg_impl;
 	}
 	return RKNN_SUCCESS;

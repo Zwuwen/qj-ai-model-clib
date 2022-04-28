@@ -5,10 +5,10 @@ class cgdd_engine:public aiEngine_api
 {
 public:
     cgdd_engine();
-    virtual ~cgdd_engine();
+    ~cgdd_engine() override;
 protected:
     //gdd
-	AlgImpl *m_alg_impl= nullptr;
+	AlgImpl *m_alg_impl= NULL;
 public:
     //引擎初始化
     RknnRet RknnInit(RknnDatas *pRknn);
