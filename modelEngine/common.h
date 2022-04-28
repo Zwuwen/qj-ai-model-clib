@@ -75,8 +75,12 @@ typedef struct RknnDatas
     RknnDatas(const RknnDatas& other){
         copy(other);
     }
-    RknnDatas& operator=(const RknnDatas&other){
-        copy(other);
+    RknnDatas& operator=(const RknnDatas&rhs){
+        if (this == &rhs){
+            return *this;
+        }
+        copy(rhs);
+        return *this;
     }
     void copy(const RknnDatas& other ){
         threshold = other.threshold;

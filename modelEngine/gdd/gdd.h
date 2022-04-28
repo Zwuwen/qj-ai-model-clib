@@ -4,11 +4,12 @@
 class cgdd_engine:public aiEngine_api
 {
 public:
-    cgdd_engine();
-    ~cgdd_engine() override;
+    cgdd_engine()=default;
+    ~cgdd_engine()override =default;
 protected:
     //gdd
-	AlgImpl *m_alg_impl= NULL;
+//	AlgImpl *m_alg_impl= NULL;
+    AlgImpl m_alg_impl;
 public:
     //引擎初始化
     RknnRet RknnInit(RknnDatas *pRknn);

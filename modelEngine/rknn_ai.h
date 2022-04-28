@@ -29,8 +29,8 @@ class rknn_ai
 	
 	private:
 		// RknnDatas m_rknnData;
-//		std::shared_ptr<aiEngine_api> m_aiEngine_api;
-        aiEngine_api* m_aiEngine_api;
+		std::shared_ptr<aiEngine_api> m_aiEngine_api;
+//        aiEngine_api* m_aiEngine_api;
 	public:
 		RknnRet init_model_engine();
 		char* model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, char* imageBufType,char* taskID);

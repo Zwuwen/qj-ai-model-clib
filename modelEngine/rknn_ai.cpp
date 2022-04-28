@@ -195,7 +195,7 @@ RknnRet rknn_ai::init_model_engine()
 	if(strcmp(m_rknnData.modelAlgType.c_str(), GddModel) == 0)
 	{
 //		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cgdd_engine());
-        m_aiEngine_api = (new cgdd_engine());
+        m_aiEngine_api.reset(new cgdd_engine());
 		ret = m_aiEngine_api->RknnInit(&m_rknnData);
 	}
 
@@ -228,7 +228,7 @@ char* rknn_ai::model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, 
 	cv::Mat inputImag;  //the image put into model
 	
 	//1.get  image
-	printf("==================imageBuf:%d  imageBufSize:%d  imageBufType:%s\r\n",imageBuf,imageBufSize,imageBufType);
+	printf("==================imageBuf:%p  imageBufSize:%d  imageBufType:%s\r\n",imageBuf,imageBufSize,imageBufType);
 	if (strcmp(imageBufType, YUV) == 0)
 	{
 
@@ -243,20 +243,20 @@ char* rknn_ai::model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, 
 		std::vector<char>().swap(vec_data);
 		if(m_rknnData.inputSize!=0)
 		{
-			cv::resize(image, inputImag, cv::Size(m_rknnData.inputSize, m_rknnData.inputSize), (0, 0), (0, 0), cv::INTER_LINEAR);
+			cv::resize(image, inputImag, cv::Size(m_rknnData.inputSize, m_rknnData.inputSize), 0, 0, cv::INTER_LINEAR);
 		}else
 		{
 			inputImag = image;
 		}
 	}
-	printf("get inferenct image over\r\n");
+//	printf("get inferenct image over\r\n");
 
 	//2.put image to detection
-	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
+//	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
 	m_aiEngine_api->Inferenct(image, inputImag,&detect_result_group,taskID);
 
 	//3.result analyse
-	printf("########m_detect_result_group count:%d \n",detect_result_group.count);
+//	printf("########m_detect_result_group count:%d \n",detect_result_group.count);
 
 	for(int i =0;i< detect_result_group.count ; i++)
 	{
@@ -273,7 +273,7 @@ char* rknn_ai::model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, 
 		//绘制
 		rectangle(image, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255, 255), 6);
 		string temp = to_string(prop)+ "_"+ label;
-		printf("draw result:%s\r\n",temp.c_str());
+//		printf("draw result:%s\r\n",temp.c_str());
 		putText(image,temp.c_str() , Point(x1, y1 - 12), 1, 2, Scalar(0, 255, 0, 255));
 	}
 
@@ -283,12 +283,12 @@ char* rknn_ai::model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, 
 		time_t nSeconds = 0;
 		time((time_t *)&nSeconds); 
 		string saveFileName = std::to_string(nSeconds) + "_"+ std::to_string(rand())+".jpg";  
-		printf("%s\r\n",saveFileName.c_str());
+//		printf("%s\r\n",saveFileName.c_str());
 		imwrite(saveFileName.c_str(), image);
 
 		struct_to_cJSON(&JsonMessge,saveFileName.c_str(), detect_result_group,taskID);
 
-		printf ("JsonMessge:%s\r\n",JsonMessge);
+//		printf ("JsonMessge:%s\r\n",JsonMessge);
 	}
 
 	memset(&detect_result_group,0,sizeof(detect_result_group_t));
@@ -303,11 +303,11 @@ RknnRet rknn_ai::deInint_model_engine()
 	RknnRet ret = RKNN_ERR;
 	
 	//根据不同模型属性进行不同处理：模型初始化引擎
-	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
+//	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
     if(m_aiEngine_api)
         ret = m_aiEngine_api->RknnDeinit();
 
-    delete m_aiEngine_api;
+//    delete m_aiEngine_api;
 
 	return ret;
 }

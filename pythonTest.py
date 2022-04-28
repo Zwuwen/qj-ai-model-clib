@@ -8,142 +8,136 @@ import threading
 from ctypes import cdll, byref, c_int, c_ubyte, c_float, c_char_p, c_void_p, c_uint32
 
 
-# 创建模型识别引擎
-def creatModelEng(modelType, threshold, modelEngPidList):
-    # 1)creat_rknn_model_engine 函数说明
-    # 輸出
-    aiLib.creat_rknn_model_engine.restype = c_void_p
-    # 输入
-    aiLib.creat_rknn_model_engine.argtypes = [c_char_p, c_float]
+class AILib:
+    def __init__(self):
+        self.ai_lib = cdll.LoadLibrary("/usr/lib/librknnx_api.so")
+        # 1)creat_rknn_model_engine 函数说明
+        # 輸出
+        self.ai_lib.creat_rknn_model_engine.restype = c_void_p
+        # 输入
+        self.ai_lib.creat_rknn_model_engine.argtypes = [c_char_p, c_float]
 
-    # 2)init_rknn_model_engine 函数说明
-    aiLib.init_rknn_model_engine.restype = c_int
-    aiLib.init_rknn_model_engine.argtypes = [c_void_p]
+        # 2)init_rknn_model_engine 函数说明
+        self.ai_lib.init_rknn_model_engine.restype = c_int
+        self.ai_lib.init_rknn_model_engine.argtypes = [c_void_p]
 
-    if modelType == "gdd" or modelType == "all":
-        modelEngPid1 = aiLib.creat_rknn_model_engine("./output_rknn_car".encode(), threshold)
-        print("modelEngPid2:", modelEngPid1)
-        ret = aiLib.init_rknn_model_engine(modelEngPid1)
-        if ret < 0:
-            print("init rknn model error")
-        else:
-            modelEngPidList.append(modelEngPid1)
-            print("modelEngPid1:", modelEngPid1)
-        # modelEngPidList.append(modelEngPid1)
+        self.ai_lib.delete_rknn_model_engine.restype = c_int
+        self.ai_lib.delete_rknn_model_engine.argtypes = [c_void_p]
 
-    if modelType == "yolo" or modelType == "all":
-        modelEngPid2 = aiLib.creat_rknn_model_engine("./yolo".encode(), threshold)
-        ret = aiLib.init_rknn_model_engine(modelEngPid2)
-        if ret < 0:
-            print("init rknn model error")
-        else:
-            modelEngPidList.append(modelEngPid2)
-            print("modelEngPid2:", modelEngPid2)
+        self.ai_lib.rknn_model_engine_inference.restype = c_char_p
+        self.ai_lib.rknn_model_engine_inference.argtypes = [c_void_p, c_char_p, c_uint32, c_char_p, c_char_p]
+        # 识别线程列表
+        self.thread_list = []
+        self.modelEngPidList = []
 
-    if modelType == "ssd" or modelType == "all":
-        modelEngPid3 = aiLib.creat_rknn_model_engine("./ssd".encode(), threshold)
-        ret = aiLib.init_rknn_model_engine(modelEngPid3)
-        if ret < 0:
-            print("init rknn model error")
-            os._exit()
-        else:
-            modelEngPidList.append(modelEngPid3)
-            print("modelEngPid3:", modelEngPid3)
+    # 创建模型识别引擎
+    def creatModelEng(self, modelType, threshold, modelEngPidList):
 
-    if modelType == "pose" or modelType == "all":
-        modelEngPid4 = aiLib.creat_rknn_model_engine("./pose".encode(), threshold)
-        ret = aiLib.init_rknn_model_engine(modelEngPid4)
-        if ret < 0:
-            print("init rknn model error")
-        else:
-            modelEngPidList.append(modelEngPid4)
-            print("modelEngPid4:", modelEngPid4)
+        if modelType == "gdd" or modelType == "all":
+            modelEngPid1 = self.ai_lib.creat_rknn_model_engine("./output_rknn_car".encode(), threshold)
+            ret = self.ai_lib.init_rknn_model_engine(modelEngPid1)
+            if ret < 0:
+                print("init rknn model error")
+            else:
+                modelEngPidList.append(modelEngPid1)
+                # print("modelEngPid1:", modelEngPid1)
+            # modelEngPidList.append(modelEngPid1)
 
-    if modelType == "hik" or modelType == "all":
-        modelEngPid5 = aiLib.creat_rknn_model_engine("./hik".encode(), threshold)
-        ret = aiLib.init_rknn_model_engine(modelEngPid5)
-        if ret < 0:
-            print("init rknn model error")
-        else:
-            modelEngPidList.append(modelEngPid5)
-            print("modelEngPid5:", modelEngPid5)
+        if modelType == "yolo" or modelType == "all":
+            modelEngPid2 = self.ai_lib.creat_rknn_model_engine("./yolo".encode(), threshold)
+            ret = self.ai_lib.init_rknn_model_engine(modelEngPid2)
+            if ret < 0:
+                print("init rknn model error")
+            else:
+                modelEngPidList.append(modelEngPid2)
+                # print("modelEngPid2:", modelEngPid2)
 
+        if modelType == "ssd" or modelType == "all":
+            modelEngPid3 = self.ai_lib.creat_rknn_model_engine("./ssd".encode(), threshold)
+            ret = self.ai_lib.init_rknn_model_engine(modelEngPid3)
+            if ret < 0:
+                print("init rknn model error")
+            else:
+                modelEngPidList.append(modelEngPid3)
+                # print("modelEngPid3:", modelEngPid3)
 
-#
-def deleteModelEng(modelEngPidList):
-    # 3)释放识别引擎 delete_rknn_model_engine 函数
-    # 说明
-    aiLib.delete_rknn_model_engine.restype = c_int
-    aiLib.delete_rknn_model_engine.argtypes = [c_void_p]
+        if modelType == "pose" or modelType == "all":
+            modelEngPid4 = self.ai_lib.creat_rknn_model_engine("./pose".encode(), threshold)
+            ret = self.ai_lib.init_rknn_model_engine(modelEngPid4)
+            if ret < 0:
+                print("init rknn model error")
+            else:
+                modelEngPidList.append(modelEngPid4)
+                # print("modelEngPid4:", modelEngPid4)
 
-    for engIndex in range(len(modelEngPidList)):
-        ret = aiLib.delete_rknn_model_engine(modelEngPidList[engIndex])
-        if ret < 0:
-            print("delete rknn model error:,", modelEngPidList[engIndex])
-        else:
-            print("delete rknn model success:", modelEngPidList[engIndex])
+        if modelType == "hik" or modelType == "all":
+            modelEngPid5 = self.ai_lib.creat_rknn_model_engine("./hik".encode(), threshold)
+            ret = self.ai_lib.init_rknn_model_engine(modelEngPid5)
+            if ret < 0:
+                print("init rknn model error")
+            else:
+                modelEngPidList.append(modelEngPid5)
+                # print("modelEngPid5:", modelEngPid5)
 
-
-#
-thread_list = []
-
-
-def creatCameraThread(cameraIndex, modelEngPidList):
-    myThread = threading.Thread(target=imageDetection, args=(cameraIndex, modelEngPidList))
-    myThread.start()
     #
-    # myThread.join()
-    thread_list.append(myThread)
+    def deleteModelEng(self,modelEngPidList):
+        # 3)释放识别引擎 delete_rknn_model_engine 函数
+        # 说明
 
+        for engIndex in range(len(modelEngPidList)):
+            ret = self.ai_lib.delete_rknn_model_engine(modelEngPidList[engIndex])
+            if ret < 0:
+                print("delete rknn model error:,", modelEngPidList[engIndex])
+            else:
+                print("delete rknn model success:", modelEngPidList[engIndex])
 
-def imageDetection(cameraIndex, modelEngPidList):
-    # 3)rknn_model_engine_inference 函数说明
-    aiLib.rknn_model_engine_inference.restype = c_char_p
-    aiLib.rknn_model_engine_inference.argtypes = [c_void_p, c_char_p, c_uint32, c_char_p, c_char_p]
+    def creatCameraThread(self, cameraIndex, modelEngPidList):
+        myThread = threading.Thread(target=self.imageDetection, args=(cameraIndex, modelEngPidList))
+        myThread.start()
+        self.thread_list.append(myThread)
 
-    count = 0
-    while (1):
-        for index in range(7):
-            imagePath = "./%s.jpg" % (index + 1)
-            with open(imagePath, 'rb') as f:
-                imageBuf = f.read()
-                print("imageBuf:", type(imageBuf))
-                imageBufSize = len(imageBuf)
-                imageBufType = "JPG"
-                # print("imageBuf:",imageBuf)
-                print("imageBufSize:", imageBufSize)
-                jpg_buf = (c_ubyte * (imageBufSize))()
+    def imageDetection(self,cameraIndex, modelEngPidList):
+        count = 0
+        while 1:
+            for index in range(7):
+                imagePath = "./%s.jpg" % (index + 1)
+                with open(imagePath, 'rb') as f:
+                    imageBuf = f.read()
+                    # print("imageBuf:", type(imageBuf))
+                    imageBufSize = len(imageBuf)
+                    imageBufType = "JPG"
+                    # print("imageBuf:",imageBuf)
+                    # print("imageBufSize:", imageBufSize)
+                    jpg_buf = (c_ubyte * (imageBufSize))()
 
-                taskID = str(index)
+                    taskID = str(index)
 
-                print(
-                    "image:=============================================================================================",
-                    index)
+                    # print(
+                    #     "image:=============================================================================================",
+                    #     index)
 
-                for engIndex in range(len(modelEngPidList)):
-                    print(
-                        "engIndex:=============================================================================================",
-                        engIndex)
+                    for engIndex in range(len(modelEngPidList)):
+                        # print(
+                        #     "engIndex:=============================================================================================",
+                        #     engIndex)
 
-                    result = aiLib.rknn_model_engine_inference(modelEngPidList[engIndex], imageBuf, imageBufSize,
-                                                               imageBufType.encode(), taskID.encode())
-                    print("result:", result)
-                    if result != None:
-                        resultData = json.loads(c_char_p(result).value)
-                        print("resultData:", resultData)
-        # break
-        count = count + 1
-        if count > 10:
-            break
-        time.sleep(1)
+                        result = self.ai_lib.rknn_model_engine_inference(
+                            modelEngPidList[engIndex], imageBuf, imageBufSize, imageBufType.encode(), taskID.encode()
+                        )
+                        # print("result:", result)
+                        if result is not None:
+                            resultData = json.loads(c_char_p(result).value)
+                            # print("resultData:", resultData)
+            # break
+            count = count + 1
+            if count > 10:
+                break
+            time.sleep(1)
 
 
 # ---------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    # 加载库文件
-    aiLib = cdll.LoadLibrary("/usr/lib/librknnx_api.so")
-    modelEngPidList = []
-
+    ai_clib = AILib()
     for i in range(4):
         print("start=========================================================", i)
         # 1）初始化模型引擎
@@ -151,17 +145,13 @@ if __name__ == '__main__':
         threshold = c_float(1)
         threshold.value = 0.5
         print("creatModelEng")
-        creatModelEng(modelType, threshold, modelEngPidList)
+        ai_clib.creatModelEng(modelType, threshold, ai_clib.modelEngPidList)
 
         # 2)
         print("imageDetection")
         cameraIndex = 1
-        creatCameraThread(cameraIndex, modelEngPidList)
-
-        # # 3)
-        # print("deleteModelEng")
-        # deleteModelEng(modelEngPidList)
-
-    [thd.join() for thd in thread_list]
-    [deleteModelEng([pid]) for pid in modelEngPidList]
-    print("end=========================================================", i)
+        ai_clib.creatCameraThread(cameraIndex, ai_clib.modelEngPidList)
+    print("WAIT...🔖")
+    [thd.join() for thd in ai_clib.thread_list]
+    [ai_clib.deleteModelEng([pid]) for pid in ai_clib.modelEngPidList]
+    print("FINISH😆")

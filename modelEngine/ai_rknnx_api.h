@@ -39,7 +39,7 @@ void* creat_rknn_model_engine(char* modelUrl,float threshold);
           * return: RknnRet
           * des: delete the rknn model engine
      *****************************/
-     RknnRet delete_rknn_model_engine(void* rknnEngine);
+     RknnRet delete_rknn_model_engine(rknn_ai * rknnEngine);
 }
 
 #endif
