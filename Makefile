@@ -32,7 +32,8 @@ CFLAGS	+= -std=c++11
 #CFLAGS  += -fsanitize=address -fno-omit-frame-pointer
 
 #LDFLAGS  链接器从哪里寻找库文件
-LIBDIR	= -L${RKNN_API}/lib64/ -L${OPENCV}/lib64/ -L${CURL}/lib/ -L./libs -L${ROCK_X}/lib64/   -L${RGA}/lib/  -L${OPENSSL}/lib/ -L${GDDI}/lib/
+#LIBDIR	= -L${RKNN_API}/lib64/ -L${OPENCV}/lib64/ -L${CURL}/lib/ -L./libs -L${ROCK_X}/lib64/   -L${RGA}/lib/  -L${OPENSSL}/lib/ -L${GDDI}/lib/
+LIBDIR	= -L${RKNN_API}/lib64/ -L${OPENCV}/lib64/ -L${CURL}/lib/ -L./libs -L${ROCK_X}/lib64/   -L${OPENSSL}/lib/ -L${GDDI}/lib/
 LDFLAGS	+=  -lrt -ldl -lm  -s -w -Wl,-gc-sections
 LDFLAGS	+= -lrknn_api 
 LDFLAGS	+= -lrockx 
@@ -45,7 +46,7 @@ LDFLAGS	+= -Wl,-rpath,./lib -lpthread
 LDFLAGS	+= -lgddi_rockchip_sdk
 LDFLAGS	+= -lrga
 LDFLAGS	+= -ldrm
-
+SYS_ROOT_PATH = /home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/
 OBJ := $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/gdd/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/hik/*.cpp))
@@ -57,7 +58,7 @@ OBJ += $(patsubst %.cpp,%.o,$(wildcard ./common/config/*.cpp))
 OBJ += $(patsubst %.c,%.o,$(wildcard ./common/json/*.c))
 
 all:${OBJ}
-	$(CC) $^ ${LIBDIR} $(LDFLAGS) -shared -fPIC -o ./librknnx_api.so
+	$(CC) $^ ${LIBDIR} $(LDFLAGS) -shared -fPIC --sysroot=$(SYS_ROOT_PATH) -o ./librknnx_api.so
 	$(AR) rcs $@ $^ 
 
 

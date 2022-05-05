@@ -214,6 +214,7 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
     printf("==================imageBuf:%p  imageBufSize:%d  imageBufType:%s\r\n", imageBuf, imageBufSize, imageBufType);
 //    if (strcmp(imageBufType, YUV) == 0) {
     if (true) {
+        cout<<"start yuv"<<endl;
         pix_formatter& formatter= pix_formatter::get_formatter();
         cout<<"formatter is ready?: "<<formatter.is_ready()<<endl;
 
@@ -222,36 +223,40 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
         in_spec.data = in_data;
         in_spec.width =1280;
         in_spec.height = 720;
-        in_spec.pix_format = (RgaSURF_FORMAT)10;
+        in_spec.pix_format =RK_FORMAT_YCbCr_420_P;
 
         /** 读取yuv文件 */
-        ifstream yuv_file("/data/zxf/in0w1280-h720-crcb420sp.bin",ios::in|ios::binary);
+//        ifstream yuv_file("/data/zxf/in0w1280-h720-crcb420sp.bin",ios::in|ios::binary);
+        ifstream yuv_file("/data/zxf/1.yuv",ios::in|ios::binary);
         if(!yuv_file){
             cout<<"open yuv file failed"<<endl;
         }else
         {
-            if (!yuv_file.read((char*)in_data, sizeof (in_data))) {
+            if (!yuv_file.read((char*)in_data, 1280*720*3/2)) {
                 // Same effect as above
                 cout<<"read yuv file failed"<<endl;
             }
-            for(int i=0;i<10;++i){
-                cout<<in_spec.data[i]<<",";
-            }
-            cout<<endl;
         }
 
-        uint8_t out_data[1280*720*3] ={0};
-        out_spec.data = in_data;
-        out_spec.width =1280;
-        out_spec.height = 720;
-        out_spec.pix_format =(RgaSURF_FORMAT)7;
+        cout<<flush;
+        uint8_t out_data[1080*1920*3] ={0};
+        out_spec.data = out_data;
+        out_spec.width =1920;
+        out_spec.height = 1080;
+        out_spec.pix_format =RK_FORMAT_BGR_888;
+        cout<<flush;
         if(formatter.yuv_2_bgr(in_spec,out_spec)){
             /** 写入BGR文件 */
             ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
             bgr_file.write((char*)out_spec.data, sizeof (out_data));
+            cout<<"yuv convert success"<<endl;
+//            return nullptr;
+        }else{
+            return nullptr;
         }
+        m_aiEngine_api->Inferenct(out_spec, &detect_result_group, taskID);
     }
-    if (strcmp(imageBufType, JPG) == 0) {
+    else if (strcmp(imageBufType, JPG) == 0) {
         std::vector<char> vec_data(imageBuf, imageBuf + imageBufSize);
         image = cv::imdecode(vec_data, CV_LOAD_IMAGE_COLOR);
         //
@@ -263,12 +268,13 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
         } else {
             inputImag = image;
         }
+        m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
     }
 //	printf("get inferenct image over\r\n");
 
     //2.put image to detection
 //	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
-    m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
+//    m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
 
     //3.result analyse
 //	printf("########m_detect_result_group count:%d \n",detect_result_group.count);

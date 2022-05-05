@@ -88,18 +88,18 @@ bool pix_formatter::yuv_2_bgr(ImageSpec &in_spec,ImageSpec &out_spec) {
 //        printf("rgaFillColor error : %s\n", strerror(errno));
         return false;
     }
-//    std::cout<<"convert finished"<<std::endl;
-//    for(int i=0;i<10;++i){
-//        std::cout<<((char*)bo_src.ptr)[i]<<",";
-//    }
-//    std::cout<<std::endl;
-//
-//    for(int i=0;i<10;++i){
-//        std::cout<<((char*)bo_dst.ptr)[i]<<",";
-//    }
-//    std::cout<<std::endl;
+    std::cout<<"convert finished"<<std::endl;
+    for(int i=0;i<10;++i){
+        std::cout<<((char*)bo_src.ptr)[i]<<",";
+    }
+    std::cout<<std::endl;
 
-    memcpy(out_spec.data,bo_dst.ptr,in_spec.height * in_spec.width * 3);
+    for(int i=0;i<10;++i){
+        std::cout<<((char*)bo_dst.ptr)[i]<<",";
+    }
+    std::cout<<std::endl;
+
+    memcpy(out_spec.data,bo_dst.ptr,out_spec.height * out_spec.width * 3);
     return true;
 }
 

@@ -26,7 +26,10 @@
 #include <linux/stddef.h>
 
 #include "stdio.h"
-#include "RgaApi.h"
+
+#include "drmrga.h"
+
+#include "RockchipRgaMacro.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 

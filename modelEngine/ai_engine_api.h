@@ -2,6 +2,7 @@
 #define __AI_ENGINE_API_H__
 
 #include "common.h"
+#include "pix_formatter.h"
 
 //编解码方法抽象类
 class aiEngine_api
@@ -18,6 +19,7 @@ public:
     virtual RknnRet RknnDeinit()= 0;
     //引擎推理
     virtual RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID)= 0;
+    virtual RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID)= 0;
 };
 
 

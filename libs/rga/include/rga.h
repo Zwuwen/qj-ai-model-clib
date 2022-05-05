@@ -110,49 +110,36 @@ enum
 {  3, 24, {{ 0, 0,  24,16,  16, 8,   8, 0 }}, GGL_BGR  },   // RK_FORMAT_BGB_888
 
 */
-    
 typedef enum _Rga_SURF_FORMAT
 {
 	RK_FORMAT_RGBA_8888    = 0x0,
     RK_FORMAT_RGBX_8888    = 0x1,
     RK_FORMAT_RGB_888      = 0x2,
     RK_FORMAT_BGRA_8888    = 0x3,
-    RK_FORMAT_BGRX_8888    = 0x4,
-    RK_FORMAT_BGR_888      = 0x5,
-    RK_FORMAT_RGB_565      = 0x6,
-    RK_FORMAT_RGBA_5551    = 0x7,
-    RK_FORMAT_RGBA_4444    = 0x8,
-    RK_FORMAT_BGR_565      = 0x9,
-    RK_FORMAT_BGRA_5551    = 0xa,
-    RK_FORMAT_BGRA_4444    = 0xb,
+    RK_FORMAT_RGB_565      = 0x4,
+    RK_FORMAT_RGBA_5551    = 0x5,
+    RK_FORMAT_RGBA_4444    = 0x6,
+    RK_FORMAT_BGR_888      = 0x7,
     
-    RK_FORMAT_Y4           = 0xe,
-    RK_FORMAT_YCbCr_400    = 0xf,
-    RK_FORMAT_YCbCr_422_SP = 0x10,
-    RK_FORMAT_YCbCr_422_P  = 0x11,
-    RK_FORMAT_YCbCr_420_SP = 0x12,
-    RK_FORMAT_YCbCr_420_P  = 0x13,
-    RK_FORMAT_YCrCb_422_SP = 0x14,
-    RK_FORMAT_YCrCb_422_P  = 0x15,
-    RK_FORMAT_YCrCb_420_SP = 0x16,
-    RK_FORMAT_YCrCb_420_P  = 0x17,
+    RK_FORMAT_YCbCr_422_SP = 0x8,    
+    RK_FORMAT_YCbCr_422_P  = 0x9,    
+    RK_FORMAT_YCbCr_420_SP = 0xa,    
+    RK_FORMAT_YCbCr_420_P  = 0xb,
 
-    RK_FORMAT_YVYU_422 = 0x18,
-    RK_FORMAT_YVYU_420 = 0x19,
-    RK_FORMAT_VYUY_422 = 0x1a,
-    RK_FORMAT_VYUY_420 = 0x1b,
-    RK_FORMAT_YUYV_422 = 0x1c,
-    RK_FORMAT_YUYV_420 = 0x1d,
-    RK_FORMAT_UYVY_422 = 0x1e,
-    RK_FORMAT_UYVY_420 = 0x1f,
-
-    RK_FORMAT_YCbCr_422_10b_SP = 0x20,
-    RK_FORMAT_YCbCr_420_10b_SP = 0x21,
-    RK_FORMAT_YCrCb_422_10b_SP = 0x22,
-    RK_FORMAT_YCrCb_420_10b_SP = 0x23,
-
-	RK_FORMAT_UNKNOWN       = 0x100,
-} RgaSURF_FORMAT;
+    RK_FORMAT_YCrCb_422_SP = 0xc,    
+    RK_FORMAT_YCrCb_422_P  = 0xd,    
+    RK_FORMAT_YCrCb_420_SP = 0xe,    
+    RK_FORMAT_YCrCb_420_P  = 0xf,
+    
+    RK_FORMAT_BPP1         = 0x10,
+    RK_FORMAT_BPP2         = 0x11,
+    RK_FORMAT_BPP4         = 0x12,
+    RK_FORMAT_BPP8         = 0x13,
+    RK_FORMAT_YCbCr_420_SP_10B = 0x20,
+    RK_FORMAT_YCrCb_420_SP_10B = 0x21,
+    RK_FORMAT_UNKNOWN       = 0x100, 
+}RgaSURF_FORMAT;
+    
     
 typedef struct rga_img_info_t
 {
@@ -348,8 +335,6 @@ line_draw_t;
                                     /* ([5]   dst   alpha mode) */
 
     unsigned char  src_trans_mode;
-
-	unsigned char  dither_mode;
 
     unsigned char CMD_fin_int_enable;                        
 
