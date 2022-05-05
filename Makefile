@@ -29,7 +29,7 @@ INCLUDEDIR+=-I./modelEngine/images
 CFLAGS	+= -g -Wall -fPIC
 CFLAGS	+= -std=c++11
 # 调试工具
-#CFLAGS  += -fsanitize=address -fno-omit-frame-pointer
+CFLAGS  += -fsanitize=address -fno-omit-frame-pointer
 
 #LDFLAGS  链接器从哪里寻找库文件
 #LIBDIR	= -L${RKNN_API}/lib64/ -L${OPENCV}/lib64/ -L${CURL}/lib/ -L./libs -L${ROCK_X}/lib64/   -L${RGA}/lib/  -L${OPENSSL}/lib/ -L${GDDI}/lib/

@@ -202,7 +202,6 @@ RknnRet rknn_ai::init_model_engine() {
     return ret;
 }
 
-
 char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, char *imageBufType, char *taskID) {
 
     detect_result_group_t detect_result_group{};
@@ -219,38 +218,45 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
         cout<<"formatter is ready?: "<<formatter.is_ready()<<endl;
 
         ImageSpec in_spec,out_spec;
-        uint8_t in_data[1280*720*3/2] ={0};
-        in_spec.data = in_data;
-        in_spec.width =1280;
-        in_spec.height = 720;
-        in_spec.pix_format =RK_FORMAT_YCbCr_420_P;
+//        uint8_t in_data[1920*1080*3/2] ={0};
+        auto in_data = std::make_shared<std::array<uint8_t ,1920*1080*3/2>>();
+        in_spec.data = in_data->data();
+        in_spec.width =1920;
+        in_spec.height = 1080;
+        in_spec.pix_format =RK_FORMAT_YCbCr_420_SP;
 
         /** 读取yuv文件 */
-//        ifstream yuv_file("/data/zxf/in0w1280-h720-crcb420sp.bin",ios::in|ios::binary);
         ifstream yuv_file("/data/zxf/1.yuv",ios::in|ios::binary);
         if(!yuv_file){
             cout<<"open yuv file failed"<<endl;
         }else
         {
-            if (!yuv_file.read((char*)in_data, 1280*720*3/2)) {
+            if (!yuv_file.read((char*)in_spec.data, 1920*1080*3/2)) {
                 // Same effect as above
                 cout<<"read yuv file failed"<<endl;
             }
         }
-
-        cout<<flush;
-        uint8_t out_data[1080*1920*3] ={0};
-        out_spec.data = out_data;
+//        uint8_t out_data[1080*1920*3] ={0};
+        auto out_data = std::make_shared<std::array<uint8_t ,1920*1080*3>>();
         out_spec.width =1920;
         out_spec.height = 1080;
         out_spec.pix_format =RK_FORMAT_BGR_888;
-        cout<<flush;
+//        out_spec.data = out_data->data();
+
+        auto start = chrono::system_clock::now();
         if(formatter.yuv_2_bgr(in_spec,out_spec)){
+            auto end   = chrono::system_clock::now();
+            auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+            cout <<  "yuv->bgr花费了"
+                 << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den
+                 << "秒" << endl;
+
             /** 写入BGR文件 */
-            ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
-            bgr_file.write((char*)out_spec.data, sizeof (out_data));
-            cout<<"yuv convert success"<<endl;
-//            return nullptr;
+            if(out_spec.data){
+                cout<<"写入OUT_BGR.bin"<<endl;
+//                ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
+//                bgr_file.write((char*)out_spec.data, 1920*1080*3);
+            }
         }else{
             return nullptr;
         }
@@ -271,11 +277,9 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
         m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
     }
 //	printf("get inferenct image over\r\n");
-
     //2.put image to detection
 //	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
 //    m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
-
     //3.result analyse
 //	printf("########m_detect_result_group count:%d \n",detect_result_group.count);
 

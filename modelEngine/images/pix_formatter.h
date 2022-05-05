@@ -9,7 +9,7 @@
 #include "RockchipRga.h"
 #include "RockchipFileOps.h"
 #include "rga.h"
-
+#include <chrono>
 /** 图片参数 */
 typedef struct ImageSpec{
     /** 像素数据 */
@@ -29,6 +29,13 @@ private:
 
     mutable RockchipRga rkRga_;
     std::mutex chip_lock_;
+    /** 转换中使用*/
+    bo_t bo_src{}, bo_dst{};
+    rga_info_t src{};
+    rga_info_t dst{};
+    /** 内存管理 */
+    bool alloc_buffer();
+    bool free_buffer();
 public:
     pix_formatter &operator=(const pix_formatter &) = delete;
 

@@ -130,7 +130,7 @@ class AILib:
                             # print("resultData:", resultData)
             # break
             count = count + 1
-            if count > 1:
+            if count == 10:
                 break
             time.sleep(1)
 
