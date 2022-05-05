@@ -59,7 +59,6 @@ RknnRet cgdd_engine::Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_g
 		GddiRet ret;
 		// srcimg 为原始图片
 		// 1）根据每一帧创建  TRANSFER_BUFFER实例，并进行图片前处理
-        cout<<"rows X clos: "<<srcimg.rows<<" "<<srcimg.cols<<endl;
 		auto* tp=new TransferBuffer(std::string("0"),srcimg.rows,srcimg.cols,srcimg.data,0);
 		
 		std::shared_ptr<TransferBuffer> transfer_buffer(tp);

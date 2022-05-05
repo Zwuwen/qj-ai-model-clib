@@ -409,7 +409,7 @@ RknnRet cyolo_engine::RknnInit(RknnDatas *pRknn)
 {
 	if(pRknn==NULL) {return RKNN_ERR;}
 	 //1、辅助模型数据
-	memcpy(&m_rknnData, pRknn,sizeof(RknnDatas));
+	 m_rknnData = *pRknn;
 
 	int MODEL_INPUT_SIZE = m_rknnData.inputSize;
 	int NUM_CLASS = m_rknnData.numClass;

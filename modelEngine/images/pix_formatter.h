@@ -36,6 +36,8 @@ private:
     /** 内存管理 */
     bool alloc_buffer();
     bool free_buffer();
+    bool init_info_t();
+    void clear_info_t();
 public:
     pix_formatter &operator=(const pix_formatter &) = delete;
 

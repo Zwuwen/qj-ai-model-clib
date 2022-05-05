@@ -163,19 +163,25 @@ RknnRet rknn_ai::init_model_engine() {
 
     //3.creat model engine
     //根据不同模型属性进行不同处理：模型初始化引擎
+    //若p为智能指针对象(如：shared_ptr< int> p),成员函数reset使用：
+    //p.reset(q) //q为智能指针要指向的新对象 ,会令智能指针p中存放指针q，即p指向q的空间，而且会释放原来的空间。（默认是delete）
+    // 参考：https://blog.csdn.net/lzn211/article/details/109147985
+
     ret = RKNN_ERR;
     printf("================modelAlgType: %s\r\n", m_rknnData.modelAlgType.c_str());
-//	if(strcmp(m_rknnData.modelAlgType.c_str(), SSD) == 0)
-//	{
-//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cssd_engine());
-//		ret = m_aiEngine_api->RknnInit(&m_rknnData);
-//	}
-//
-//	if(strcmp(m_rknnData.modelAlgType.c_str(), Yolo) == 0)
-//	{
-//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cyolo_engine());
-//		ret = m_aiEngine_api->RknnInit(&m_rknnData);
-//	}
+	if(strcmp(m_rknnData.modelAlgType.c_str(), SSD) == 0)
+	{
+		//m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cssd_engine());
+        m_aiEngine_api.reset(new cssd_engine());
+		ret = m_aiEngine_api->RknnInit(&m_rknnData);
+	}
+
+	if(strcmp(m_rknnData.modelAlgType.c_str(), Yolo) == 0)
+	{
+		//m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cyolo_engine());
+        m_aiEngine_api.reset(new cyolo_engine());
+		ret = m_aiEngine_api->RknnInit(&m_rknnData);
+	}
 
     if (strcmp(m_rknnData.modelAlgType.c_str(), GddModel) == 0) {
 //		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cgdd_engine());
@@ -183,21 +189,23 @@ RknnRet rknn_ai::init_model_engine() {
         ret = m_aiEngine_api->RknnInit(&m_rknnData);
     }
 
-//	if(strcmp(m_rknnData.modelAlgType.c_str(), HikangModel) == 0)
-//	{
-//		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new chik_engine());
-//		ret = m_aiEngine_api->RknnInit(&m_rknnData);
-//	}
-//
+	if(strcmp(m_rknnData.modelAlgType.c_str(), HikangModel) == 0)
+	{
+		//m_aiEngine_api = std::shared_ptr<aiEngine_api>(new chik_engine());
+        m_aiEngine_api.reset(new chik_engine());
+		ret = m_aiEngine_api->RknnInit(&m_rknnData);
+	}
+
 //	// 内部算法
-//	if (strcmp(m_rknnData.modelAlgType.c_str(), BuiltIn)==0)
-//	{
-//		if(strcmp(m_rknnData.modelPath.c_str(), BodyPosture)==0)
-//		{
-//			m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cpose_engine());
-//			ret = m_aiEngine_api->RknnInit(&m_rknnData);
-//		}
-//	}
+	if (strcmp(m_rknnData.modelAlgType.c_str(), BuiltIn)==0)
+	{
+		if(strcmp(m_rknnData.modelPath.c_str(), BodyPosture)==0)
+		{
+			//m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cpose_engine());
+            m_aiEngine_api.reset(new cpose_engine());
+			ret = m_aiEngine_api->RknnInit(&m_rknnData);
+		}
+	}
 
     return ret;
 }
@@ -211,8 +219,8 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
 
     //1.get  image
     printf("==================imageBuf:%p  imageBufSize:%d  imageBufType:%s\r\n", imageBuf, imageBufSize, imageBufType);
-//    if (strcmp(imageBufType, YUV) == 0) {
-    if (true) {
+    if (strcmp(imageBufType, YUV) == 0) {
+//    if (true) {
         cout<<"start yuv"<<endl;
         pix_formatter& formatter= pix_formatter::get_formatter();
         cout<<"formatter is ready?: "<<formatter.is_ready()<<endl;

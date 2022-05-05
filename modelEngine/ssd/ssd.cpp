@@ -249,7 +249,7 @@ RknnRet cssd_engine::RknnInit(RknnDatas *pRknn)
 {
    if(pRknn==NULL) {return RKNN_ERR ;}
    //1、辅助模型数据
-	memcpy(&m_rknnData, pRknn,sizeof(RknnDatas));
+	 m_rknnData = *pRknn;
 
     //1. check the model info-------------------------------------------------------
 	int MODEL_INPUT_SIZE = m_rknnData.inputSize;
