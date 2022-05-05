@@ -4,7 +4,7 @@
 
 #ifndef DEMO_H_
 #define DEMO_H_
-//ÔÚ´Ë´¦°üº¬ÆäËüÍ·ÎÄ¼þ
+//ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
@@ -26,110 +26,105 @@
 
 #include "inital_alg_params_mfnr.h"
 #include "rk_aiq_awb_algo_v200.h"
+
 #define         FILE_RAW_EXT         ".raw"
 #define         FILE_YUV_EXT         ".yuv"
 #define         FILE_DAT_EXT         ".dat"
 
-typedef enum YUV_FILE_FMT
-{
-    F_YUV_420SP        = 0x00,
-    F_YUV_420P         = 0x01,
-    F_YUV_422I         = 0x02,
-    F_YUV_422SP        = 0x03,
-    F_YUV_422P         = 0x04,
-    F_YUV_444I         = 0x05,
+typedef enum YUV_FILE_FMT {
+    F_YUV_420SP = 0x00,
+    F_YUV_420P = 0x01,
+    F_YUV_422I = 0x02,
+    F_YUV_422SP = 0x03,
+    F_YUV_422P = 0x04,
+    F_YUV_444I = 0x05,
 
-    F_YUV_MAX          = 0x10,
-}YUV_FILE_FMT_t;
+    F_YUV_MAX = 0x10,
+} YUV_FILE_FMT_t;
 
-typedef enum INPUT_FILE_FMT
-{
-    F_IN_FMT_RAW         = 0x00,
+typedef enum INPUT_FILE_FMT {
+    F_IN_FMT_RAW = 0x00,
     F_IN_FMT_YUV,
 
 
-    F_IN_FMT_MAX         = 0x10,
-}INPUT_FILE_FMT_t;
+    F_IN_FMT_MAX = 0x10,
+} INPUT_FILE_FMT_t;
 
 
+//ï¿½Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+typedef struct tag_config_com {
+    int exp_info_en;
+    int framenum;
+    int rawwid;
+    int rawhgt;
+    int rawbit;
+    int bayerfmt;
+    int yuvbit;
+    int yuvfmt;
+} tag_config_com;
 
-//´Ë´¦¶¨Òå²ÎÊý
-typedef struct tag_config_com
-{
-    int exp_info_en    ;
-    int framenum    ;
-    int rawwid      ;
-    int rawhgt      ;
-    int rawbit      ;
-    int bayerfmt    ;
-    int yuvbit      ;
-    int yuvfmt      ;
-}tag_config_com;
-
-typedef struct tag_config_txt
-{
+typedef struct tag_config_txt {
     tag_config_com config_com;
 
-    int framecnt    ;
-    int iso         ;
-    int exptime[3]  ;
-    int expgain[3]  ;
-    int rgain       ;
-    int bgain       ;
-    int grgain      ;
-    int gbgain      ;
-    int dGain       ;
-    int lux         ;
-}tag_config_txt;
+    int framecnt;
+    int iso;
+    int exptime[3];
+    int expgain[3];
+    int rgain;
+    int bgain;
+    int grgain;
+    int gbgain;
+    int dGain;
+    int lux;
+} tag_config_txt;
 
-typedef struct tag_ST_DEMO_INPUT_PARAMS
-{
-	int width;        //rawÍ¼¿í
-	int height;       //rawÍ¼¸ß
-	int bayerPattern; //bayer pattern¸ñÊ½:0--BGGR,1--GBRG,2--GRBG,3--RGGB
-	int yuvFmt;       //yuv file     ¸ñÊ½: YUV_FILE_FMT_t
-	int bitValue;     //rawÊý¾ÝÎ»¿í
-	int hdr_framenum;
-	float expGain[MAX_HDR_FRM_NUM];          //
-	float expTime[MAX_HDR_FRM_NUM];      //ÆØ¹âÊ±¼ä
-	int rGain;        //wb rgain
-	int bGain;        //wb bgain
-	int grGain;        //wb grgain
-	int gbGain;        //wb gbgain
-	int dGain;        //wb gbgain
+typedef struct tag_ST_DEMO_INPUT_PARAMS {
+    int width;        //rawÍ¼ï¿½ï¿½
+    int height;       //rawÍ¼ï¿½ï¿½
+    int bayerPattern; //bayer patternï¿½ï¿½Ê½:0--BGGR,1--GBRG,2--GRBG,3--RGGB
+    int yuvFmt;       //yuv file     ï¿½ï¿½Ê½: YUV_FILE_FMT_t
+    int bitValue;     //rawï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+    int hdr_framenum;
+    float expGain[MAX_HDR_FRM_NUM];          //
+    float expTime[MAX_HDR_FRM_NUM];      //ï¿½Ø¹ï¿½Ê±ï¿½ï¿½
+    int rGain;        //wb rgain
+    int bGain;        //wb bgain
+    int grGain;        //wb grgain
+    int gbGain;        //wb gbgain
+    int dGain;        //wb gbgain
     int fileFmt;      //input file format:INPUT_FILE_FMT_t
-	int width_full;        //rawÍ¼¿í
-	int height_full;       //rawÍ¼¸ß
-	int crop_width;
-	int crop_height;
-	int crop_xoffset;
-	int crop_yoffset;
+    int width_full;        //rawÍ¼ï¿½ï¿½
+    int height_full;       //rawÍ¼ï¿½ï¿½
+    int crop_width;
+    int crop_height;
+    int crop_xoffset;
+    int crop_yoffset;
 
-	char pathFileCfg[256];//configÎÄ¼þÂ·¾¶
-	char pathRawData[256];//rawÍ¼Â·¾¶
-	char nameRawData[256];//rawÍ¼Ãû³Æ
-	char pathExpInfo[256];//exp_infoÎÄ¼þÂ·¾¶
-	char pathReslut[256];//½á¹û±£´æÎÄ¼þ¼ÐÂ·¾¶
-	char suffix[256];       // Êä³öÎÄ¼þºó×º×Ö·û
+    char pathFileCfg[256];//configï¿½Ä¼ï¿½Â·ï¿½ï¿½
+    char pathRawData[256];//rawÍ¼Â·ï¿½ï¿½
+    char nameRawData[256];//rawÍ¼ï¿½ï¿½ï¿½ï¿½
+    char pathExpInfo[256];//exp_infoï¿½Ä¼ï¿½Â·ï¿½ï¿½
+    char pathReslut[256];//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Â·ï¿½ï¿½
+    char suffix[256];       // ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½×ºï¿½Ö·ï¿½
     char pathRtlin[256];    //rtl in path
-	int skip_num;
-	int frame_end;
+    int skip_num;
+    int frame_end;
 
-	int hdr_proc_mode;
-	int out_mode;
+    int hdr_proc_mode;
+    int out_mode;
 
 
-    char  dbgFlg[1024];        // must > ISP_CAP_MAX
-    int  config_full;
+    char dbgFlg[1024];        // must > ISP_CAP_MAX
+    int config_full;
 
     int exp_info_en;
     int file_info_en;
     FILE *fp_exp_info;
-}ST_DEMO_INPUT_PARAMS;
+} ST_DEMO_INPUT_PARAMS;
 
 
 
-//´Ë´¦ÉùÃ÷º¯Êý
+//ï¿½Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 

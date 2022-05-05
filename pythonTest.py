@@ -99,7 +99,7 @@ class AILib:
     def imageDetection(self,cameraIndex, modelEngPidList):
         count = 0
         while 1:
-            for index in range(7):
+            for index in range(1):
                 imagePath = "./%s.jpg" % (index + 1)
                 with open(imagePath, 'rb') as f:
                     imageBuf = f.read()
@@ -130,7 +130,7 @@ class AILib:
                             # print("resultData:", resultData)
             # break
             count = count + 1
-            if count > 10:
+            if count > 1:
                 break
             time.sleep(1)
 
@@ -138,7 +138,7 @@ class AILib:
 # ---------------------------------------------------------------------------------------
 if __name__ == '__main__':
     ai_clib = AILib()
-    for i in range(4):
+    for i in range(1):
         print("start=========================================================", i)
         # 1）初始化模型引擎
         modelType = "gdd"  # gdd yolo ssd pose hik
