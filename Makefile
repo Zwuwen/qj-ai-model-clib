@@ -44,6 +44,7 @@ LDFLAGS	+= -lcurl
 LDFLAGS	+= -Wl,-rpath,./lib -lpthread
 LDFLAGS	+= -lgddi_rockchip_sdk
 LDFLAGS	+= -lrga
+LDFLAGS	+= -ldrm
 
 OBJ := $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/gdd/*.cpp))

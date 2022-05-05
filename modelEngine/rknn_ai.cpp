@@ -212,9 +212,44 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
 
     //1.get  image
     printf("==================imageBuf:%p  imageBufSize:%d  imageBufType:%s\r\n", imageBuf, imageBufSize, imageBufType);
-    if (strcmp(imageBufType, YUV) == 0) {
+//    if (strcmp(imageBufType, YUV) == 0) {
+    if (true) {
         pix_formatter& formatter= pix_formatter::get_formatter();
         cout<<"formatter is ready?: "<<formatter.is_ready()<<endl;
+
+        ImageSpec in_spec,out_spec;
+        uint8_t in_data[1280*720*3/2] ={0};
+        in_spec.data = in_data;
+        in_spec.width =1280;
+        in_spec.height = 720;
+        in_spec.pix_format = (RgaSURF_FORMAT)10;
+
+        /** 读取yuv文件 */
+        ifstream yuv_file("/data/zxf/in0w1280-h720-crcb420sp.bin",ios::in|ios::binary);
+        if(!yuv_file){
+            cout<<"open yuv file failed"<<endl;
+        }else
+        {
+            if (!yuv_file.read((char*)in_data, sizeof (in_data))) {
+                // Same effect as above
+                cout<<"read yuv file failed"<<endl;
+            }
+            for(int i=0;i<10;++i){
+                cout<<in_spec.data[i]<<",";
+            }
+            cout<<endl;
+        }
+
+        uint8_t out_data[1280*720*3] ={0};
+        out_spec.data = in_data;
+        out_spec.width =1280;
+        out_spec.height = 720;
+        out_spec.pix_format =(RgaSURF_FORMAT)7;
+        if(formatter.yuv_2_bgr(in_spec,out_spec)){
+            /** 写入BGR文件 */
+            ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
+            bgr_file.write((char*)out_spec.data, sizeof (out_data));
+        }
     }
     if (strcmp(imageBufType, JPG) == 0) {
         std::vector<char> vec_data(imageBuf, imageBuf + imageBufSize);

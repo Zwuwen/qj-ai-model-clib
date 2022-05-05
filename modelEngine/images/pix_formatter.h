@@ -12,9 +12,13 @@
 
 /** 图片参数 */
 typedef struct ImageSpec{
+    /** 像素数据 */
     uint8_t *data{};
+    /** 像素宽度 */
     int width{};
+    /** 像素高度 */
     int height{};
+    /** 像素格式 */
     RgaSURF_FORMAT pix_format{};
 } ImageSpec;
 
@@ -39,7 +43,7 @@ public:
         return rkRga_.RkRgaIsReady();
     };
 
-    int yuv_2_bgr(ImageSpec &in_spec, ImageSpec &out_spec);
+    bool yuv_2_bgr(ImageSpec &in_spec, ImageSpec &out_spec);
 };
 
 
