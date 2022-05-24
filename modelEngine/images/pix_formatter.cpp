@@ -17,7 +17,13 @@ bool pix_formatter::yuv_2_bgr(ImageSpec &in_spec,ImageSpec &out_spec) {
     if(bpp==0) return false;
     if(!in_spec.data) return false;
     /********** read data from *.bin file **********/
-    memcpy(bo_src.ptr,in_spec.data,in_spec.height * in_spec.width * bpp);
+    int image_size = in_spec.height * in_spec.width;
+    if(in_spec.pix_format==RK_FORMAT_YCbCr_420_SP){
+        memcpy(bo_src.ptr,in_spec.data, image_size + (image_size>>1));
+    }
+    else{
+        memcpy(bo_src.ptr,in_spec.data,image_size * bpp);
+    }
 
     /********** rga_info_t Init **********/
     clear_info_t();

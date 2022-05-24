@@ -463,3 +463,8 @@ void cpose_engine::postProcess(cv::Mat &orig_img,void *result, size_t result_siz
 	
 	}
 }
+
+RknnRet cpose_engine::Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID){
+
+	return RKNN_SUCCESS;
+}

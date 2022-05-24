@@ -210,46 +210,58 @@ RknnRet rknn_ai::init_model_engine() {
     return ret;
 }
 
-char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, char *imageBufType, char *taskID) {
+char *rknn_ai::model_engine_inference(
+        uint8_t *imageBuf, uint32_t imageBufSize, char *imageBufType, char *taskID,int width,int height
+        ) {
 
     detect_result_group_t detect_result_group{};
 
     cv::Mat image;      //the src image
     cv::Mat inputImag;  //the image put into model
-
     //1.get  image
     printf("==================imageBuf:%p  imageBufSize:%d  imageBufType:%s\r\n", imageBuf, imageBufSize, imageBufType);
-    if (strcmp(imageBufType, YUV) == 0) {
+    if (strcmp(imageBufType, YUV420P) == 0) {
 //    if (true) {
+//#define YUV_TEST
         cout<<"start yuv"<<endl;
         pix_formatter& formatter= pix_formatter::get_formatter();
-        cout<<"formatter is ready?: "<<formatter.is_ready()<<endl;
-
+        if (!formatter.is_ready()){
+            cout<<"rga is not ready!"<<endl;
+            return nullptr;
+        }
         ImageSpec in_spec,out_spec;
-//        uint8_t in_data[1920*1080*3/2] ={0};
-        auto in_data = std::make_shared<std::array<uint8_t ,1920*1080*3/2>>();
+        in_spec.data = imageBuf;
+        in_spec.width = width;
+        in_spec.height = height;
+//        in_spec.width =1920;
+//        in_spec.height = 1080;
+//        in_spec.pix_format =RK_FORMAT_YCbCr_420_SP;
+        in_spec.pix_format =RK_FORMAT_YCbCr_420_P;
+#ifdef YUV_TEST
+        const int image_size = 1920*1080+(1920*1080>>1);
+        auto in_data = std::make_shared<std::array<uint8_t ,image_size >>();
         in_spec.data = in_data->data();
         in_spec.width =1920;
         in_spec.height = 1080;
         in_spec.pix_format =RK_FORMAT_YCbCr_420_SP;
-
         /** 读取yuv文件 */
         ifstream yuv_file("/data/zxf/1.yuv",ios::in|ios::binary);
         if(!yuv_file){
             cout<<"open yuv file failed"<<endl;
         }else
         {
-            if (!yuv_file.read((char*)in_spec.data, 1920*1080*3/2)) {
+            if (!yuv_file.read((char*)in_spec.data, image_size)) {
                 // Same effect as above
                 cout<<"read yuv file failed"<<endl;
             }
         }
+#endif
 //        uint8_t out_data[1080*1920*3] ={0};
         auto out_data = std::make_shared<std::array<uint8_t ,1920*1080*3>>();
         out_spec.width =1920;
         out_spec.height = 1080;
         out_spec.pix_format =RK_FORMAT_BGR_888;
-//        out_spec.data = out_data->data();
+        out_spec.data = out_data->data();
 
         auto start = chrono::system_clock::now();
         if(formatter.yuv_2_bgr(in_spec,out_spec)){
@@ -259,16 +271,56 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
                  << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den
                  << "秒" << endl;
 
-            /** 写入BGR文件 */
-            if(out_spec.data){
-                cout<<"写入OUT_BGR.bin"<<endl;
-//                ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
-//                bgr_file.write((char*)out_spec.data, 1920*1080*3);
-            }
+//            /** 写入BGR文件 */
+//            if(out_spec.data){
+//                cout<<"写入OUT_BGR.bin"<<endl;
+//               ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
+//               bgr_file.write((char*)out_spec.data, 1920*1080*3);
+//            }
         }else{
             return nullptr;
         }
+
+        /*
         m_aiEngine_api->Inferenct(out_spec, &detect_result_group, taskID);
+        if(detect_result_group.count>0){
+            // wrap input buffer
+            Mat img(out_spec.height, out_spec.width, CV_8UC3, (unsigned char*)out_spec.data);
+            image = img;
+        }
+        */
+
+        Mat img(out_spec.height, out_spec.width, CV_8UC3, (unsigned char*)out_spec.data);
+        image = img;
+//        imwrite("/root/zxf/1111111.jpg", image);
+        if (m_rknnData.inputSize != 0) {
+            cv::resize(image, inputImag, cv::Size(m_rknnData.inputSize, m_rknnData.inputSize), 0, 0, cv::INTER_LINEAR);
+        } else {
+            inputImag = image;
+        }
+        m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
+        static int  write_flag = 0;
+//        write_flag+=1;
+//        if(write_flag > 100){
+        if(detect_result_group.count>0){
+            /** 写入BGR文件 */
+            const int image_size = 1920*1080+(1920*1080>>1);
+//            if(out_spec.data && write_flag<150){
+            if(out_spec.data){
+                char bgr_file_name [64]={0};
+                char yuv_file_name [64]={0};
+                sprintf(bgr_file_name,"/data/OUT_BGR_%d.bin",write_flag);
+                cout<<"写入:"<<bgr_file_name<<endl;
+                ofstream bgr_file (bgr_file_name, ios::out | ios::binary);
+                bgr_file.write((char*)out_spec.data, 1920*1080*3);
+
+                sprintf(yuv_file_name,"/data/OUT_YUV_%d.bin",write_flag);
+                cout<<"写入:"<<yuv_file_name<<endl;
+                ofstream yuv_file (yuv_file_name, ios::out | ios::binary);
+                yuv_file.write((char*)in_spec.data, image_size);
+                write_flag++;
+            }
+        }
     }
     else if (strcmp(imageBufType, JPG) == 0) {
         std::vector<char> vec_data(imageBuf, imageBuf + imageBufSize);
@@ -284,13 +336,6 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
         }
         m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
     }
-//	printf("get inferenct image over\r\n");
-    //2.put image to detection
-//	printf ("================modelAlgType: %s\r\n",m_rknnData.modelAlgType.c_str());
-//    m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
-    //3.result analyse
-//	printf("########m_detect_result_group count:%d \n",detect_result_group.count);
-
     for (int i = 0; i < detect_result_group.count; i++) {
         int x1 = detect_result_group.results[i].box.left;
         int y1 = detect_result_group.results[i].box.top;
@@ -299,34 +344,26 @@ char *rknn_ai::model_engine_inference(uint8_t *imageBuf, uint32_t imageBufSize, 
 
         float prop = detect_result_group.results[i].prop;
         char *label = detect_result_group.results[i].name;
-
         printf("result: (%4d, %4d, %4d, %4d), %4.2f, %s\n", x1, y1, x2, y2, prop, label);
-
         //绘制
-        rectangle(image, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255, 255), 6);
-        string temp = to_string(prop) + "_" + label;
+        //rectangle(image, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255, 255), 6);
+//        string temp = to_string(prop) + "_" + label;
 //		printf("draw result:%s\r\n",temp.c_str());
-        putText(image, temp.c_str(), Point(x1, y1 - 12), 1, 2, Scalar(0, 255, 0, 255));
+        //putText(image, temp.c_str(), Point(x1, y1 - 12), 1, 2, Scalar(0, 255, 0, 255));
     }
 
-    char *JsonMessge = NULL;
+    char *JsonMessge = nullptr;
     if (detect_result_group.count > 0) {
         time_t nSeconds = 0;
         time((time_t *) &nSeconds);
-        string saveFileName = std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
-//		printf("%s\r\n",saveFileName.c_str());
+        string saveFileName ="/userdata/images/"+ std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
+		printf("%s\r\n",saveFileName.c_str());
         imwrite(saveFileName.c_str(), image);
-
         struct_to_cJSON(&JsonMessge, saveFileName.c_str(), detect_result_group, taskID);
-
 //		printf ("JsonMessge:%s\r\n",JsonMessge);
     }
-
-    memset(&detect_result_group, 0, sizeof(detect_result_group_t));
-    image.release();
-    inputImag.release();
-
     return JsonMessge;
+
 }
 
 RknnRet rknn_ai::deInint_model_engine() {

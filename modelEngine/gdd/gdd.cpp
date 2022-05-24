@@ -110,13 +110,6 @@ RknnRet cgdd_engine::Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_g
 			{
 				if(it->class_id_ != -1)
 				{
-//					std::cout<<"classid: "<<it->class_id_ << " name " << it->name_vector_[it->class_id_] <<" prob: " \
-//							<< it->prob_ << " x: " << it->bbox_[0]  << " y: " << it->bbox_[1]  << " width " << \
-//							it->bbox_[2]  << " height " << it->bbox_[3]  << std::endl;
-
-							//cv::putText(orig_img, it->name_vector_[it->class_id_] + ":" + std::to_string(it->prob_), cv::Point(it->bbox_[0] , it->bbox_[1] ), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255),1);
-							//cv::rectangle(orig_img, cv::Rect(it->bbox_[0] , it->bbox_[1] , it->bbox_[2]  , it->bbox_[3] ), cv::Scalar(0,255,0), 2);
-
 					if (it->prob_ < score_threshold )
 					{
 						printf("prob_:%f    score_threshold:%f\r\n",it->prob_ , score_threshold);
@@ -214,13 +207,6 @@ RknnRet cgdd_engine::Inferenct(ImageSpec &bgr_data, detect_result_group_t *detec
             {
                 if(it->class_id_ != -1)
                 {
-//					std::cout<<"classid: "<<it->class_id_ << " name " << it->name_vector_[it->class_id_] <<" prob: " \
-//							<< it->prob_ << " x: " << it->bbox_[0]  << " y: " << it->bbox_[1]  << " width " << \
-//							it->bbox_[2]  << " height " << it->bbox_[3]  << std::endl;
-
-                    //cv::putText(orig_img, it->name_vector_[it->class_id_] + ":" + std::to_string(it->prob_), cv::Point(it->bbox_[0] , it->bbox_[1] ), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255),1);
-                    //cv::rectangle(orig_img, cv::Rect(it->bbox_[0] , it->bbox_[1] , it->bbox_[2]  , it->bbox_[3] ), cv::Scalar(0,255,0), 2);
-
                     if (it->prob_ < score_threshold )
                     {
                         printf("prob_:%f    score_threshold:%f\r\n",it->prob_ , score_threshold);

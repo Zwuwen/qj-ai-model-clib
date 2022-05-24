@@ -19,7 +19,8 @@
 #include "src_json.h"
 #include "rknn_api.h"
 
-#define YUV         "YUV"
+#define YUV420SP    "YUV420SP"
+#define YUV420P    "YUV420P"
 #define JPG         "JPG"
 
 #define SSD          "ssd"
@@ -73,16 +74,6 @@ typedef struct RknnDatas
 {
     RknnDatas()=default;
     RknnDatas(const RknnDatas& other){
-        copy(other);
-    }
-    RknnDatas& operator=(const RknnDatas&rhs){
-        if (this == &rhs){
-            return *this;
-        }
-        copy(rhs);
-        return *this;
-    }
-    void copy(const RknnDatas& other ){
         threshold = other.threshold;
         inputSize = other.inputSize;
         numResults = other.numResults;
@@ -94,6 +85,23 @@ typedef struct RknnDatas
         labelPath = other.labelPath;      //  label.txt  full path
         priboxPath = other.priboxPath;     //  pribox.txt  full path
         modelAlgType = other.modelAlgType;   //  ssd、yolo、built-in 、GddModel、HikangModel
+    }
+    /**
+     * copy and swap idiom https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Copy-and-swap
+     * @param rhs
+     * @return
+     */
+    RknnDatas& operator=(RknnDatas rhs){
+        RknnDatas(rhs).swap(*this);
+        return *this;
+    }
+    void swap(RknnDatas& other){
+        std::swap(modelDir,other.modelDir);
+        std::swap(jsonPath,other.jsonPath);
+        std::swap(modelPath,other.modelPath);
+        std::swap(labelPath,other.labelPath);
+        std::swap(priboxPath,other.priboxPath);
+        std::swap(modelAlgType,other.modelAlgType);
     }
 	float threshold{};       //obj score threshold
 	int inputSize{};

@@ -1,6 +1,6 @@
 CROSS_COMPILE	?= aarch64-linux-
 CC		= ${CROSS_COMPILE}gcc
-C++		= ${CROSS_COMPILE}g++
+CPP		= ${CROSS_COMPILE}g++
 STRIP	= ${CROSS_COMPILE}strip
 LD		= ${CROSS_COMPILE}ld
 AR		=$(CROSS_COMPILE)ar
@@ -16,6 +16,8 @@ GDDI = ./libs/gddi
 INCLUDEDIR=-I./include/ 
 INCLUDEDIR+=-I./common/json/
 INCLUDEDIR+=-I./common/config/
+INCLUDEDIR+=-I./common/logs/
+INCLUDEDIR+=-I./common/logs/spdlog/
 INCLUDEDIR+=-I${RKNN_API}/include
 INCLUDEDIR+=-I${OPENCV}/include
 INCLUDEDIR+=-I${CURL}/include
@@ -27,7 +29,7 @@ INCLUDEDIR+=-I./modelEngine/images
 
 #C 编译器选型
 CFLAGS	+= -g -Wall -fPIC
-CFLAGS	+= -std=c++11
+#CFLAGS	+= -std=c++11
 # 调试工具
 #CFLAGS  += -fsanitize=address -fno-omit-frame-pointer
 
@@ -55,17 +57,20 @@ OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/ssd/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/yolo/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/images/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./common/config/*.cpp))
+OBJ += $(patsubst %.cpp,%.o,$(wildcard ./common/logs/*.cpp))
 OBJ += $(patsubst %.c,%.o,$(wildcard ./common/json/*.c))
 
 all:${OBJ}
 	$(CC) $^ ${LIBDIR} $(LDFLAGS) -shared -fPIC --sysroot=$(SYS_ROOT_PATH) -o ./librknnx_api.so
-	$(AR) rcs $@ $^ 
+	#$(CPP) $^ ${LIBDIR} $(LDFLAGS) -shared -fPIC --sysroot=$(SYS_ROOT_PATH) -o ./librknnx_api.so
+	$(AR) rcs $@ $^
+	#$(AR) $@ $^
 
 
 %.o:%.cpp
-	$(C++) -std=c++11 -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
+	$(CPP) -std=c++11 -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
 %.o:%.c
-	$(CC) -std=c++11 -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
+	$(CC) -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
 
 clean:
 	rm -rf *.o ${OBJ} $@ ${TARG}

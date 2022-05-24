@@ -404,3 +404,9 @@ RknnRet cssd_engine::Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_g
     printf("########detect_result_group count:%d \n",detect_result_group->count);
 	return RKNN_SUCCESS;
 }
+
+
+RknnRet cssd_engine::Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID){
+
+	return RKNN_SUCCESS;
+}

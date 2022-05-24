@@ -31,7 +31,7 @@ extern "C"{
           * return: the result of detection result 
           * des: use the rknn model engine to inference the image
      *****************************/
-     char* rknn_model_engine_inference(rknn_ai* rknnEngine , uint8_t* imageBuf, uint32_t imageBufSize, char* imageBufType,char* taskID);
+     char* rknn_model_engine_inference(rknn_ai* rknnEngine , uint8_t* imageBuf, uint32_t imageBufSize, char* imageBufType,char* taskID,int,int);
 
      /****************************
           * func: delete_rknn_model_engine
@@ -40,6 +40,9 @@ extern "C"{
           * des: delete the rknn model engine
      *****************************/
      RknnRet delete_rknn_model_engine(rknn_ai * rknnEngine);
+
+     //�豸ע����Ϣ
+     RknnRet rknnx_get_device_info(char* deviceType ,char* filePath);
 }
 
 #endif

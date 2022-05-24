@@ -30,7 +30,7 @@ class rknn_ai
 		std::shared_ptr<aiEngine_api> m_aiEngine_api;
 	public:
 		RknnRet init_model_engine();
-		char* model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, char* imageBufType,char* taskID);
+		char* model_engine_inference(uint8_t* imageBuf, uint32_t imageBufSize, char* imageBufType,char* taskID,int,int);
 		RknnRet deInint_model_engine();
 };
 class GOO{

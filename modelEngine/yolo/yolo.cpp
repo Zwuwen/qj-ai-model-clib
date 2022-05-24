@@ -562,3 +562,9 @@ RknnRet  cyolo_engine::Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result
 }
 
 
+RknnRet cyolo_engine::Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID){
+
+	return RKNN_SUCCESS;
+}
+
+

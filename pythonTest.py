@@ -25,7 +25,13 @@ class AILib:
         self.ai_lib.delete_rknn_model_engine.argtypes = [c_void_p]
 
         self.ai_lib.rknn_model_engine_inference.restype = c_char_p
-        self.ai_lib.rknn_model_engine_inference.argtypes = [c_void_p, c_char_p, c_uint32, c_char_p, c_char_p]
+        self.ai_lib.rknn_model_engine_inference.argtypes = [c_void_p, c_char_p, c_uint32, c_char_p, c_char_p, c_int,
+                                                            c_int]
+
+        # 5)RknnRet rknnx_get_device_info(char* deviceType ,char* filePath);
+        self.ai_lib.rknnx_get_device_info.restype = c_int
+        self.ai_lib.rknnx_get_device_info.argtypes = [c_char_p, c_char_p]
+
         # 识别线程列表
         self.thread_list = []
         self.modelEngPidList = []
@@ -80,7 +86,7 @@ class AILib:
                 # print("modelEngPid5:", modelEngPid5)
 
     #
-    def deleteModelEng(self,modelEngPidList):
+    def deleteModelEng(self, modelEngPidList):
         # 3)释放识别引擎 delete_rknn_model_engine 函数
         # 说明
 
@@ -96,7 +102,7 @@ class AILib:
         myThread.start()
         self.thread_list.append(myThread)
 
-    def imageDetection(self,cameraIndex, modelEngPidList):
+    def imageDetection(self, cameraIndex, modelEngPidList):
         count = 0
         while 1:
             for index in range(1):
@@ -123,6 +129,7 @@ class AILib:
 
                         result = self.ai_lib.rknn_model_engine_inference(
                             modelEngPidList[engIndex], imageBuf, imageBufSize, imageBufType.encode(), taskID.encode()
+                            , 1920, 1080
                         )
                         # print("result:", result)
                         if result is not None:
@@ -130,9 +137,9 @@ class AILib:
                             # print("resultData:", resultData)
             # break
             count = count + 1
-            if count == 10:
+            if count > 1:
                 break
-            # time.sleep(1)
+            time.sleep(1)
 
 
 # ---------------------------------------------------------------------------------------

@@ -221,3 +221,7 @@ RknnRet chik_engine::Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_g
 	return RKNN_SUCCESS;
 }
 
+RknnRet chik_engine::Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID){
+
+	return RKNN_SUCCESS;
+}

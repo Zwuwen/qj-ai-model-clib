@@ -43,10 +43,11 @@ char *GetIniKeyString(char *title,char *key,const char *filename)
 					if ('#' == szLine[0])
 					{
 					}
-					else if ( '\/' == szLine[0] && '\/' == szLine[1] )
-					{
-
-					}
+//					else if ( '\/' == szLine[0] && '\/' == szLine[1] )
+//                    else if ( '/' == szLine[0] && '/' == szLine[1] )
+//					{
+//
+//					}
 					else
 					{
 						//
