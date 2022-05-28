@@ -1,6 +1,6 @@
 #include "getConfigInfo.h"
 
-char *GetIniKeyString(char *title,char *key,const char *filename)
+char *GetIniKeyString(const char *title,const char *key,const char *filename)
 {
 	FILE *fp;
 	char szLine[1024];
@@ -76,7 +76,7 @@ char *GetIniKeyString(char *title,char *key,const char *filename)
 }
 
 
-int GetIniKeyInt(char *title,char *key,const char *filename)
+int GetIniKeyInt(const char *title,const char *key,const char *filename)
 {
 	return atoi(GetIniKeyString(title,key,filename));
 }

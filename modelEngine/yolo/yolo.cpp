@@ -1,6 +1,6 @@
 #include "yolo.h"
 
-int GetMasksInfo(YoloModelData* modelData,int nanchor,const char *CONF_FILE_PATH)
+int GetMasksInfo(YoloModelData* modelData,unsigned int nanchor,const char *CONF_FILE_PATH)
 {
     char masksStr[64];
     vector<int> resultList;
@@ -9,7 +9,7 @@ int GetMasksInfo(YoloModelData* modelData,int nanchor,const char *CONF_FILE_PATH
 	resultList=GetStrInfo(masksStr);
 	if(resultList.size() != nanchor)
 		return -1;
-	for(int index=0;index<resultList.size();index++)
+	for(unsigned int index=0;index<resultList.size();index++)
 	   modelData->masks_0[index]=resultList[index];
 	std::cout <<"masks_0:"<<  modelData->masks_0[0] <<","<<  modelData->masks_0[1]<<","<<  modelData->masks_0[2]<< "\n";
 
@@ -17,7 +17,7 @@ int GetMasksInfo(YoloModelData* modelData,int nanchor,const char *CONF_FILE_PATH
 	resultList=GetStrInfo(masksStr);
 	if(resultList.size() != nanchor)
 		return -1;
-	for(int index=0;index<resultList.size();index++)
+	for(unsigned int index=0;index<resultList.size();index++)
 	     modelData->masks_1[index]=resultList[index];
 	std::cout <<"masks_1:"<<  modelData->masks_1[0] <<","<<  modelData->masks_1[1]<<","<<  modelData->masks_1[2]<< "\n";
 
@@ -27,7 +27,7 @@ int GetMasksInfo(YoloModelData* modelData,int nanchor,const char *CONF_FILE_PATH
 	    resultList=GetStrInfo(masksStr);
 		if(resultList.size() != nanchor)
 			return -1;
-	    for(int index=0;index<resultList.size();index++)
+	    for(unsigned int index=0;index<resultList.size();index++)
 	         modelData->masks_2[index]=resultList[index];
 	    std::cout <<"masks_2:"<<  modelData->masks_2[0] <<","<<  modelData->masks_2[1]<<","<<  modelData->masks_2[2]<< "\n";
     }
@@ -43,7 +43,7 @@ int GetAnchorsList(YoloModelData* modelData,const char *CONF_FILE_PATH)
     std::cout <<"anchorsList:";
 	vector<int> resultList;
 	resultList=GetStrInfo(anchorsListStr);
-	for(int index=0;index<resultList.size();index++)
+	for(size_t index=0;index<resultList.size();index++)
 	{
 	     modelData->anchorsList[index]=resultList[index];
 	    std::cout <<  modelData->anchorsList[index]<< " ";
@@ -335,7 +335,7 @@ int postProcessYolo(RknnYoloEng* yoloEng,RknnDatas *pRknn, int width, int heigh,
 		int topclass=-1;            //
 		float topclass_score=0;      //
 		if(dets[i].objectness==0) continue;
-		printf("++++++++++++++++++++++boxIndex:%d   thresh:%f   NUM_CLASS:\n",i,dets[i].objectness,NUM_CLASS);
+//		printf("++++++++++++++++++++++boxIndex:%d   thresh:%f   NUM_CLASS:\n",i,dets[i].objectness,NUM_CLASS);
 		
 		for(int j=0;j<NUM_CLASS;j++)
 		{
@@ -439,7 +439,7 @@ RknnRet cyolo_engine::RknnInit(RknnDatas *pRknn)
         return RKNN_ERR;
     }
     fseek(fp, 0, SEEK_END);
-    int model_len = ftell(fp);
+    unsigned int model_len = ftell(fp);
     void *model = malloc(model_len);
     fseek(fp, 0, SEEK_SET);
     if(model_len != fread(model, 1, model_len, fp)) {

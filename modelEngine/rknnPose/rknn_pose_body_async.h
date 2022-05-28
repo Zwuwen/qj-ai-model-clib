@@ -45,15 +45,15 @@ const std::vector<std::pair<int,int>> posePairs = {
 typedef struct
 {
 	//1)[poseInfo]-----------------------------------------
-	int poseNum; // 有效关节点数
+	unsigned int poseNum; // 有效关节点数
 	int poseList[18];     // 有效关节点 序号 列表，最多关节点个数 18
 
 	//2)[angelInfo]-------------------------------------
-	int angleNum=0;   //关节点夹角个数
+	unsigned int angleNum=0;   //关节点夹角个数
 	pose_index PoseIdex[maxAngle]; // 存储构成关节点 夹角  三个关节点 序号
 
 	//3)[classInfo]----------------------------------------
-	int classNum=0;          //识别类型数量
+	unsigned int classNum=0;          //识别类型数量
 	pose_name norm_angle[maxAngle];       //判断每个 类型的标准，即 angleNum 个夹角的 标准 角度
 
 	//4)[detectInfo]----------------------------------------
@@ -77,19 +77,19 @@ class cpose_engine:public aiEngine_api
 {
 public:
     cpose_engine();
-    virtual ~cpose_engine();
+    ~cpose_engine() override;
 protected:
     //pose
 	RknnPoseEng m_rknnPoseEng;
 	void postProcess(cv::Mat &orig_img,void *result, size_t result_size,int leftTopX, int leftTopY, int cutImageWH,detect_result_group_t *detect_result_group) ;
 public:
     //引擎初始化
-    RknnRet RknnInit(RknnDatas *pRknn);
+    RknnRet RknnInit(RknnDatas *pRknn) override;
     //引擎反初始化
-    RknnRet RknnDeinit();
+    RknnRet RknnDeinit() override;
     //引擎推理
-    RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID);
-	RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID);
+    RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID) override;
+	RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID) override;
 };
 
 

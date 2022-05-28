@@ -95,7 +95,13 @@ typedef struct RknnDatas
         RknnDatas(rhs).swap(*this);
         return *this;
     }
+
     void swap(RknnDatas& other){
+        std::swap(threshold,other.threshold);
+        std::swap(inputSize,other.inputSize);
+        std::swap(numResults,other.numResults);
+        std::swap(numClass,other.numClass);
+
         std::swap(modelDir,other.modelDir);
         std::swap(jsonPath,other.jsonPath);
         std::swap(modelPath,other.modelPath);

@@ -13,10 +13,10 @@ protected:
     AlgImpl m_alg_impl;
 public:
     //引擎初始化
-    RknnRet RknnInit(RknnDatas *pRknn);
+    RknnRet RknnInit(RknnDatas *pRknn) override;
     //引擎反初始化
-    RknnRet RknnDeinit();
+    RknnRet RknnDeinit() override;
     //引擎推理
-    RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID);
-    RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID);
+    RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID) override;
+    RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID) override;
 };

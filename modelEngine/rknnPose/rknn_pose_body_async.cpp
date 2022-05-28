@@ -46,7 +46,7 @@ float average(float *x, int len)
 int get_pose_number(PoseModelData poseModelData, rockx_keypoints_t keypoints,Coordinate_t &in){
 	//1、get pose type:return type index
 	int beOk=1;
-	for(int index =0 ;index<poseModelData.poseNum; index++)
+	for(size_t index =0 ;index<poseModelData.poseNum; index++)
 	{
 		int pointIndex = poseModelData.poseList[index];
 		if(keypoints.score[pointIndex]<=0 && pointIndex!=0)
@@ -74,7 +74,7 @@ int get_pose_number(PoseModelData poseModelData, rockx_keypoints_t keypoints,Coo
 	// 5
 	int pose_arr[maxAngle] = {0};
 	// get 5 angles from 8 points
-	for(int index =0 ;index < poseModelData.angleNum ;index++)
+	for(size_t index =0 ;index < poseModelData.angleNum ;index++)
 	{
 		if( (0 < keypoints.score[poseModelData.PoseIdex[index].indexo]) && 
 		 	(0 < keypoints.score[poseModelData.PoseIdex[index].indexs]) && 
@@ -100,10 +100,10 @@ int get_pose_number(PoseModelData poseModelData, rockx_keypoints_t keypoints,Coo
 	int maxPositionIndex = -1;
 	memcpy(&poseAgl, pose_arr, sizeof(pose_name));
 	// every class have 5 angles ,we will get the difference of the absolute value
-	for(int index =0;index < poseModelData.classNum; index++)
+	for(unsigned int index =0;index < poseModelData.classNum; index++)
 	{// classNum(type):
 		////dzlog_debug("!!!@@@@ classNum  index:%d",  index);
-		for(int i =0;i < poseModelData.angleNum; i++)
+		for(size_t i =0;i < poseModelData.angleNum; i++)
 		{// the difference of the absolute value
 			int* pNorm_int = (int*)&(poseModelData.norm_angle[index]);
 			int* pAgl_int = (int*)&poseAgl;
@@ -129,7 +129,7 @@ int get_pose_number(PoseModelData poseModelData, rockx_keypoints_t keypoints,Coo
 	////dzlog_debug("now_angleNumOK:%d ", maxPosition);
 	////dzlog_debug("maxPositionIndex:%d,",maxPositionIndex);
 
-	if(poseModelData.angleNum == maxPosition)
+	if(poseModelData.angleNum == unsigned (maxPosition))
 	{//5个夹角都满足条件，返回 动作类型
 		////dzlog_info("maxPositionIndex:%d,now_angleNumOK:%d, angleNumOK:%d ",maxPositionIndex,index_buf[maxPositionIndex],angleNum);
 		return maxPositionIndex;
@@ -139,7 +139,7 @@ int get_pose_number(PoseModelData poseModelData, rockx_keypoints_t keypoints,Coo
 	}
 }
 
-int Mat2RockxImag(cv::Mat &frame,rockx_image_t &input_image){
+void Mat2RockxImag(cv::Mat &frame,rockx_image_t &input_image){
 	input_image.pixel_format = ROCKX_PIXEL_FORMAT_BGR888;
 	input_image.width = frame.cols;
 	input_image.height = frame.rows;
@@ -162,7 +162,7 @@ int GetConfigsInfo(PoseModelData* poseModelData, const char *CONF_FILE_PATH)
     if(resultList.size() !=  poseModelData->poseNum)
     	return -1;
 
-    for(int index=0;index< poseModelData->poseNum;index++)
+    for(unsigned int index=0;index< poseModelData->poseNum;index++)
     {
     	poseModelData->poseList[index]=resultList[index];
     	std::cout <<"poseList["<<index<<"]:"<< poseModelData->poseList[index] << "\n";
@@ -176,7 +176,7 @@ int GetConfigsInfo(PoseModelData* poseModelData, const char *CONF_FILE_PATH)
     if(resultList.size() !=  poseModelData->angleNum*3)
         return -1;
 
-    for(int index=0;index< poseModelData->angleNum;index++)
+    for(unsigned int index=0;index< poseModelData->angleNum;index++)
     {
     	poseModelData->PoseIdex[index].indexo = resultList[index*3+0];
     	poseModelData->PoseIdex[index].indexs = resultList[index*3+1];
@@ -193,10 +193,10 @@ int GetConfigsInfo(PoseModelData* poseModelData, const char *CONF_FILE_PATH)
     if(resultList.size() != poseModelData->classNum* poseModelData->angleNum)
         return -1;
 
-    for(int index=0;index<poseModelData->classNum;index++)
+    for(unsigned int index=0;index<poseModelData->classNum;index++)
     {
     	std::cout <<"class_List["<< index<<"]:";
-    	for(int index2=0;index2< poseModelData->angleNum;index2++)
+    	for(unsigned int index2=0;index2< poseModelData->angleNum;index2++)
     	{
     		int temp =  resultList[index* poseModelData->angleNum+index2];
     		switch(index2)
@@ -211,6 +211,8 @@ int GetConfigsInfo(PoseModelData* poseModelData, const char *CONF_FILE_PATH)
     		case 7: poseModelData->norm_angle[index].Ang8 = temp;break;
     		case 8: poseModelData->norm_angle[index].Ang9 = temp;break;
     		case 9: poseModelData->norm_angle[index].Ang10 = temp;break;
+            default:
+                break;
     		}
     		std::cout <<temp << " ";
     	}
@@ -368,15 +370,15 @@ RknnRet cpose_engine::Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_
 
 void cpose_engine::postProcess(cv::Mat &orig_img,void *result, size_t result_size,int leftTopX, int leftTopY, int cutImageWH,detect_result_group_t *detect_result_group) 
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
+    struct timeval tv{};
+    gettimeofday(&tv, nullptr);
     //printf("%ld on result callback\n", (tv.tv_sec * 1000000 + tv.tv_usec));
 
-    rockx_keypoints_array_t *body_array = (rockx_keypoints_array_t*)result;
+    auto *body_array = (rockx_keypoints_array_t*)result;
 
 	int last_count = 0;
 	int pose_id = 0;
-	static int last_pose_id = 0;
+//	static int last_pose_id = 0;
 
 	//存储目标关节点信息
 	rockx_keypoints_t detect_result_group_keypoints[5];
@@ -410,7 +412,7 @@ void cpose_engine::postProcess(cv::Mat &orig_img,void *result, size_t result_siz
 		detect_result_group->count = last_count;
     }
 
-	static int pose_multi_frame = 0;
+//	static int pose_multi_frame = 0;
 	if( (0 < detect_result_group->count)  &&(0 <= pose_id)  )
 	{
 		//1:draw detection area
@@ -428,7 +430,7 @@ void cpose_engine::postProcess(cv::Mat &orig_img,void *result, size_t result_siz
 				circle(orig_img, Point(x, y), 3, Scalar(255, 0, 0), -1);
 			}
 			//3:draw line
-			for(int j = 0; j < posePairs.size(); j ++)
+			for(unsigned int j = 0; j < posePairs.size(); j ++)
 			{
 			     const std::pair<int,int>& posePair = posePairs[j];
 			     int x0 = detect_result_group_keypoints[i].points[posePair.first].x+leftTopX;

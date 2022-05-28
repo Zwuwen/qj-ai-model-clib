@@ -56,9 +56,9 @@ chik_engine::~chik_engine()
 // hikang 模型初始化
 RknnRet chik_engine::RknnInit(RknnDatas *pRknn)
 {
-	if(pRknn==NULL) {return RKNN_ERR ;}
+	if(pRknn==nullptr) {return RKNN_ERR ;}
 	//1、辅助模型数据
-	memcpy(&m_rknnData, pRknn,sizeof(RknnDatas));
+    m_rknnData = *pRknn;
 	
 	// 2)创建json 
 	printf("Hikang priboxPath :%s------------------------------------\n",m_rknnData.priboxPath.c_str());

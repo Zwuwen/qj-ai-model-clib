@@ -62,9 +62,7 @@ OBJ += $(patsubst %.c,%.o,$(wildcard ./common/json/*.c))
 
 all:${OBJ}
 	$(CC) $^ ${LIBDIR} $(LDFLAGS) -shared -fPIC --sysroot=$(SYS_ROOT_PATH) -o ./librknnx_api.so
-	#$(CPP) $^ ${LIBDIR} $(LDFLAGS) -shared -fPIC --sysroot=$(SYS_ROOT_PATH) -o ./librknnx_api.so
 	$(AR) rcs $@ $^
-	#$(AR) $@ $^
 
 
 %.o:%.cpp

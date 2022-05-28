@@ -19,17 +19,17 @@
 extern "C" {
 #endif
 
-/**
- * @brief Pose of Body KeyPoints Name
- */
-static const char *ROCKX_POSE_BODY_KEYPOINTS_NAME[] = {
-	"Nose", "Neck",
-	"R-Sho", "R-Elb", "R-Wr",
-	"L-Sho", "L-Elb", "L-Wr",
-	"R-Hip", "R-Knee", "R-Ank",
-	"L-Hip", "L-Knee", "L-Ank",
-	"R-Eye", "L-Eye", "R-Ear", "L-Ear"
-};
+///**
+// * @brief Pose of Body KeyPoints Name
+// */
+//static const char *ROCKX_POSE_BODY_KEYPOINTS_NAME[] = {
+//	"Nose", "Neck",
+//	"R-Sho", "R-Elb", "R-Wr",
+//	"L-Sho", "L-Elb", "L-Wr",
+//	"R-Hip", "R-Knee", "R-Ank",
+//	"L-Hip", "L-Knee", "L-Ank",
+//	"R-Eye", "L-Eye", "R-Ear", "L-Ear"
+//};
 
 /**
  * @brief KeyPoints for One Body or Finger

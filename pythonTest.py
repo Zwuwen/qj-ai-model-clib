@@ -145,10 +145,11 @@ class AILib:
 # ---------------------------------------------------------------------------------------
 if __name__ == '__main__':
     ai_clib = AILib()
+    # name_list = ["gdd","yolo"]
     for i in range(1):
         print("start=========================================================", i)
         # 1）初始化模型引擎
-        modelType = "gdd"  # gdd yolo ssd pose hik
+        modelType = ""  # gdd yolo ssd pose hik
         threshold = c_float(1)
         threshold.value = 0.5
         print("creatModelEng")

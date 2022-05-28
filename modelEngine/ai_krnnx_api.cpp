@@ -1,14 +1,23 @@
 #include "ai_rknnx_api.h"
 #include "Loggers.h"
 extern "C" {
-    //==================================================================================
+    /**
+     * 创建模型引擎
+     * @param modelUrl
+     * @param threshold
+     * @return
+     */
     void *creat_rknn_model_engine(char *modelUrl, float threshold) {
         Loggers::init_multi_sink();
         SPDLOG_TRACE("creat_rknn_model_engine({},{})",modelUrl,threshold);
         auto rknnEngine = new rknn_ai(modelUrl, threshold);
         return rknnEngine;
     }
-    //==================================================================================
+    /**
+     * 初始化模型引擎
+     * @param rknnEngine
+     * @return
+     */
     RknnRet init_rknn_model_engine(rknn_ai *rknnEngine) {
         SPDLOG_TRACE("init_rknn_model_engine({})",(void*)rknnEngine);
         if (rknnEngine == nullptr) {
@@ -17,7 +26,17 @@ extern "C" {
             return rknnEngine->init_model_engine();
         }
     }
-
+    /**
+     * 引擎识别
+     * @param rknnEngine
+     * @param imageBuf
+     * @param imageBufSize
+     * @param imageBufType
+     * @param taskID
+     * @param width
+     * @param height
+     * @return
+     */
     char *rknn_model_engine_inference(
             rknn_ai *rknnEngine, uint8_t *imageBuf, uint32_t imageBufSize, char *imageBufType, char *taskID,int width,
             int height
@@ -30,8 +49,11 @@ extern "C" {
             return rknnEngine->model_engine_inference(imageBuf, imageBufSize, imageBufType, taskID,width,height);
         }
     }
-
-
+    /**
+     * 删除引擎
+     * @param rknnEngine
+     * @return
+     */
     RknnRet delete_rknn_model_engine(rknn_ai *rknnEngine) {
         SPDLOG_TRACE("delete_rknn_model_engine({})",(void*)rknnEngine);
         if (rknnEngine == nullptr) {
@@ -42,7 +64,12 @@ extern "C" {
         }
     }
 
-    //设备注册信息
+    /**
+     * 获取设备注册信息
+     * @param deviceType
+     * @param filePath
+     * @return
+     */
     RknnRet rknnx_get_device_info(char* deviceType ,char* filePath){
         SPDLOG_TRACE("rknnx_get_device_info({},{})",deviceType,filePath);
         if (nullptr == deviceType || filePath == nullptr){

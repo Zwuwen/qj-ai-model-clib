@@ -9,8 +9,8 @@ int loadBoxPriors(RknnDatas *pRknn, RknnSSDEng *ssdEng)
 {
     const char *d = " ";
 	char *lines[4];
-	float (*boxPriors)[pRknn->numResults] = (float (*)[pRknn->numResults])ssdEng->box_priors;
-	int count = readLines(pRknn->priboxPath.c_str(), lines, 4,true);
+//	float (*boxPriors)[pRknn->numResults] = (float (*)[pRknn->numResults])ssdEng->box_priors;
+	readLines(pRknn->priboxPath.c_str(), lines, 4,true);
     for (int i = 0; i < 4; i++) {
         char *line_str = lines[i];
         char *p;
@@ -19,7 +19,7 @@ int loadBoxPriors(RknnDatas *pRknn, RknnSSDEng *ssdEng)
         while (p) {
             float number = (float)(atof(p));
             ssdEng->box_priors[i][priorIndex++] = number;
-            p=strtok(NULL, d);
+            p=strtok(nullptr, d);
         }
         if (priorIndex != pRknn->numResults) {
 			printf("error\n");
@@ -271,7 +271,7 @@ RknnRet cssd_engine::RknnInit(RknnDatas *pRknn)
         return RKNN_ERR;
     }
     fseek(fp, 0, SEEK_END);
-    int model_len = ftell(fp);
+    unsigned int model_len = ftell(fp);
     void *model = malloc(model_len);
     fseek(fp, 0, SEEK_SET);
     if(model_len != fread(model, 1, model_len, fp)) {

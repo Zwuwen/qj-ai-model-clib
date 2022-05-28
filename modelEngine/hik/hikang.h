@@ -11,7 +11,7 @@ class chik_engine:public aiEngine_api
 {
 public:
     chik_engine();
-    virtual ~chik_engine();
+    ~chik_engine() override;
 protected:
     char m_engurl[255]= { 0 };    //识别引擎
     char m_admin[64]= { 0 };
@@ -22,10 +22,10 @@ protected:
 
 public:
     //引擎初始化
-    RknnRet RknnInit(RknnDatas *pRknn);
+    RknnRet RknnInit(RknnDatas *pRknn) override;
     //引擎反初始化
-    RknnRet RknnDeinit();
+    RknnRet RknnDeinit() override;
     //引擎推理
-    RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID);
-    RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID);
+    RknnRet Inferenct(cv::Mat &srcimg,cv::Mat &inputImg,detect_result_group_t *detect_result_group,char* taskID) override;
+    RknnRet Inferenct(ImageSpec &bgr_data,detect_result_group_t *detect_result_group,char* taskID) override;
 };
