@@ -11,6 +11,7 @@ extern "C" {
         Loggers::init_multi_sink();
         SPDLOG_TRACE("creat_rknn_model_engine({},{})",modelUrl,threshold);
         auto rknnEngine = new rknn_ai(modelUrl, threshold);
+        SPDLOG_TRACE("creat_rknn_model_engine return {}",(void*)rknnEngine);
         return rknnEngine;
     }
     /**
@@ -21,9 +22,12 @@ extern "C" {
     RknnRet init_rknn_model_engine(rknn_ai *rknnEngine) {
         SPDLOG_TRACE("init_rknn_model_engine({})",(void*)rknnEngine);
         if (rknnEngine == nullptr) {
+            SPDLOG_TRACE("init_rknn_model_engine return {}",RKNN_ERR);
             return RKNN_ERR;
         } else {
-            return rknnEngine->init_model_engine();
+            auto result = rknnEngine->init_model_engine();
+            SPDLOG_TRACE("init_rknn_model_engine return {}",result);
+            return result;
         }
     }
     /**
@@ -44,9 +48,18 @@ extern "C" {
 
         SPDLOG_TRACE( "rknn_model_engine_inference({},{},{},{},{},{},{})",(void *)rknnEngine,(void *)imageBuf,imageBufSize,imageBufType,taskID, width,height );
         if (rknnEngine == nullptr) {
+            SPDLOG_ERROR("rknn_model_engine_inference() return null");
             return nullptr;
         } else {
-            return rknnEngine->model_engine_inference(imageBuf, imageBufSize, imageBufType, taskID,width,height);
+            auto result = rknnEngine->model_engine_inference(imageBuf, imageBufSize, imageBufType, taskID,width,height);
+            if(!result){
+                SPDLOG_ERROR("rknn_model_engine_inference() return null");
+            }
+            else{
+                SPDLOG_TRACE("rknn_model_engine_inference() return");
+            }
+            return result;
+
         }
     }
     /**
@@ -57,9 +70,11 @@ extern "C" {
     RknnRet delete_rknn_model_engine(rknn_ai *rknnEngine) {
         SPDLOG_TRACE("delete_rknn_model_engine({})",(void*)rknnEngine);
         if (rknnEngine == nullptr) {
+            SPDLOG_ERROR("delete_rknn_model_engine return {}",RKNN_ERR);
             return RKNN_ERR;
         } else {
             delete rknnEngine;
+            SPDLOG_TRACE("delete_rknn_model_engine return {}",RKNN_SUCCESS);
             return RKNN_SUCCESS;
         }
     }
@@ -81,10 +96,12 @@ extern "C" {
 		    GddiRet temp =AlgImpl::getGxtFile(string(filePath));
 		    if(temp==GDDI_SUCCESS)
 		    {
+                SPDLOG_TRACE("rknnx_get_device_info() return {}",RKNN_SUCCESS);
 			    return RKNN_SUCCESS;
 		    }
 	    }
 
-	    return RKNN_ERR;
+        SPDLOG_ERROR("rknnx_get_device_info() return {}",RKNN_ERR);
+        return RKNN_ERR;
     }
 }

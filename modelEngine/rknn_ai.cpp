@@ -254,7 +254,7 @@ char *rknn_ai::model_engine_inference(
         if (formatter.yuv_2_bgr(in_spec, out_spec)) {
             auto end = chrono::system_clock::now();
             auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-            SPDLOG_TRACE("yuv->bgr cost {} s",double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den);
+            SPDLOG_TRACE("yuv->bgr spends {} s",double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den);
 //            /** 写入BGR文件 */
 //            if(out_spec.data){
 //                cout<<"写入OUT_BGR.bin"<<endl;
@@ -282,6 +282,19 @@ char *rknn_ai::model_engine_inference(
             inputImag = image;
         }
         m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
+
+        char *JsonMessge = nullptr;
+        if (detect_result_group.count > 0) {
+            time_t nSeconds = 0;
+            time((time_t *) &nSeconds);
+            string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
+            printf("%s\r\n", saveFileName.c_str());
+            imwrite(saveFileName.c_str(), image);
+            SPDLOG_INFO("after write");
+            struct_to_cJSON(&JsonMessge, saveFileName.c_str(), detect_result_group, taskID);
+            SPDLOG_INFO("after json");
+        }
+        return JsonMessge;
 //        static int  write_flag = 0;
 //        if(detect_result_group.count>0){
 //            /** 写入BGR文件 */
@@ -307,41 +320,43 @@ char *rknn_ai::model_engine_inference(
         //
         cv::imwrite("test.jpg", image);
         // 清空  vec_data
-        std::vector<char>().swap(vec_data);
+//        std::vector<char>().swap(vec_data);
         if (m_rknnData.inputSize != 0) {
             cv::resize(image, inputImag, cv::Size(m_rknnData.inputSize, m_rknnData.inputSize), 0, 0, cv::INTER_LINEAR);
         } else {
             inputImag = image;
         }
         m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
-    }
-    for (int i = 0; i < detect_result_group.count; i++) {
-        int x1 = detect_result_group.results[i].box.left;
-        int y1 = detect_result_group.results[i].box.top;
-        int x2 = detect_result_group.results[i].box.right;
-        int y2 = detect_result_group.results[i].box.bottom;
 
-        float prop = detect_result_group.results[i].prop;
-        char *label = detect_result_group.results[i].name;
-//        printf("result: (%4d, %4d, %4d, %4d), %4.2f, %s\n", x1, y1, x2, y2, prop, label);
-        SPDLOG_INFO("Detect result:({:4d}, {:4d}, {:4d}, {:4d}), {:4.2f}, {}",x1, y1, x2, y2, prop, label);
-        //绘制
-        //rectangle(image, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255, 255), 6);
-//        string temp = to_string(prop) + "_" + label;
-//		printf("draw result:%s\r\n",temp.c_str());
-        //putText(image, temp.c_str(), Point(x1, y1 - 12), 1, 2, Scalar(0, 255, 0, 255));
+        char *JsonMessge = nullptr;
+        if (detect_result_group.count > 0) {
+            time_t nSeconds = 0;
+            time((time_t *) &nSeconds);
+            string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
+            printf("%s\r\n", saveFileName.c_str());
+            imwrite(saveFileName.c_str(), image);
+            SPDLOG_INFO("after write");
+            struct_to_cJSON(&JsonMessge, saveFileName.c_str(), detect_result_group, taskID);
+            SPDLOG_INFO("after json");
+        }
+        return JsonMessge;
     }
+//    for (int i = 0; i < detect_result_group.count; i++) {
+//        int x1 = detect_result_group.results[i].box.left;
+//        int y1 = detect_result_group.results[i].box.top;
+//        int x2 = detect_result_group.results[i].box.right;
+//        int y2 = detect_result_group.results[i].box.bottom;
+//
+//        float prop = detect_result_group.results[i].prop;
+//        char *label = detect_result_group.results[i].name;
+//        SPDLOG_INFO("Detect result:({:4d}, {:4d}, {:4d}, {:4d}), {:4.2f}, {}",x1, y1, x2, y2, prop, label);
+//        //绘制
+//        //rectangle(image, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255, 255), 6);
+////        string temp = to_string(prop) + "_" + label;
+////		printf("draw result:%s\r\n",temp.c_str());
+//        //putText(image, temp.c_str(), Point(x1, y1 - 12), 1, 2, Scalar(0, 255, 0, 255));
+//    }
 
-    char *JsonMessge = nullptr;
-    if (detect_result_group.count > 0) {
-        time_t nSeconds = 0;
-        time((time_t *) &nSeconds);
-        string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
-        printf("%s\r\n", saveFileName.c_str());
-        imwrite(saveFileName.c_str(), image);
-        struct_to_cJSON(&JsonMessge, saveFileName.c_str(), detect_result_group, taskID);
-    }
-    return JsonMessge;
 
 }
 

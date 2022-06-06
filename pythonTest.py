@@ -37,7 +37,7 @@ class AILib:
         self.modelEngPidList = []
 
     # 创建模型识别引擎
-    def creatModelEng(self, modelType, threshold, modelEngPidList):
+    def create_model_engine(self, modelType, threshold, modelEngPidList):
 
         if modelType == "gdd" or modelType == "all":
             modelEngPid1 = self.ai_lib.creat_rknn_model_engine("./output_rknn_car".encode(), threshold)
@@ -86,7 +86,7 @@ class AILib:
                 # print("modelEngPid5:", modelEngPid5)
 
     #
-    def deleteModelEng(self, modelEngPidList):
+    def delete_model_engine(self, modelEngPidList):
         # 3)释放识别引擎 delete_rknn_model_engine 函数
         # 说明
 
@@ -97,69 +97,53 @@ class AILib:
             else:
                 print("delete rknn model success:", modelEngPidList[engIndex])
 
-    def creatCameraThread(self, cameraIndex, modelEngPidList):
-        myThread = threading.Thread(target=self.imageDetection, args=(cameraIndex, modelEngPidList))
-        myThread.start()
-        self.thread_list.append(myThread)
+    def create_camera_thread(self, cameraIndex, modelEngPidList):
+        my_thread = threading.Thread(target=self.image_detection, args=(cameraIndex, modelEngPidList))
+        my_thread.start()
+        self.thread_list.append(my_thread)
 
-    def imageDetection(self, cameraIndex, modelEngPidList):
+    def image_detection(self, cameraIndex, modelEngPidList):
         count = 0
         while 1:
-            for index in range(1):
-                imagePath = "./%s.jpg" % (index + 1)
-                with open(imagePath, 'rb') as f:
-                    imageBuf = f.read()
-                    # print("imageBuf:", type(imageBuf))
-                    imageBufSize = len(imageBuf)
-                    imageBufType = "JPG"
-                    # print("imageBuf:",imageBuf)
-                    # print("imageBufSize:", imageBufSize)
-                    jpg_buf = (c_ubyte * (imageBufSize))()
+            for index in range(7):
+                image_path = "./%s.jpg" % (index + 1)
+                with open(image_path, 'rb') as f:
+                    image_buf = f.read()
+                    image_buf_size = len(image_buf)
+                    image_buf_type = "JPG"
 
                     taskID = str(index)
 
-                    # print(
-                    #     "image:=============================================================================================",
-                    #     index)
-
                     for engIndex in range(len(modelEngPidList)):
-                        # print(
-                        #     "engIndex:=============================================================================================",
-                        #     engIndex)
-
                         result = self.ai_lib.rknn_model_engine_inference(
-                            modelEngPidList[engIndex], imageBuf, imageBufSize, imageBufType.encode(), taskID.encode()
+                            modelEngPidList[engIndex], image_buf, image_buf_size, image_buf_type.encode(), taskID.encode()
                             , 1920, 1080
                         )
-                        # print("result:", result)
                         if result is not None:
                             resultData = json.loads(c_char_p(result).value)
-                            # print("resultData:", resultData)
-            # break
             count = count + 1
-            if count > 1:
+            if count > 2:
                 break
-            time.sleep(1)
+            # time.sleep(1)
 
 
 # ---------------------------------------------------------------------------------------
 if __name__ == '__main__':
     ai_clib = AILib()
-    # name_list = ["gdd","yolo"]
-    for i in range(1):
+    for i in range(4):
         print("start=========================================================", i)
         # 1）初始化模型引擎
-        modelType = ""  # gdd yolo ssd pose hik
+        modelType = "yolo"  # gdd yolo ssd pose hik
         threshold = c_float(1)
         threshold.value = 0.5
         print("creatModelEng")
-        ai_clib.creatModelEng(modelType, threshold, ai_clib.modelEngPidList)
+        ai_clib.create_model_engine(modelType, threshold, ai_clib.modelEngPidList)
 
         # 2)
         print("imageDetection")
         cameraIndex = 1
-        ai_clib.creatCameraThread(cameraIndex, ai_clib.modelEngPidList)
+        ai_clib.create_camera_thread(cameraIndex, ai_clib.modelEngPidList)
     print("WAIT...🔖")
     [thd.join() for thd in ai_clib.thread_list]
-    [ai_clib.deleteModelEng([pid]) for pid in ai_clib.modelEngPidList]
+    [ai_clib.delete_model_engine([pid]) for pid in ai_clib.modelEngPidList]
     print("FINISH😆")
