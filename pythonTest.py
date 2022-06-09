@@ -121,8 +121,9 @@ class AILib:
                         )
                         if result is not None:
                             resultData = json.loads(c_char_p(result).value)
+                            print(resultData)
             count = count + 1
-            if count > 2:
+            if count > 100:
                 break
             # time.sleep(1)
 
@@ -130,7 +131,7 @@ class AILib:
 # ---------------------------------------------------------------------------------------
 if __name__ == '__main__':
     ai_clib = AILib()
-    for i in range(4):
+    for i in range(1):
         print("start=========================================================", i)
         # 1）初始化模型引擎
         modelType = "yolo"  # gdd yolo ssd pose hik

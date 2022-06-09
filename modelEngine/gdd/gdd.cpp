@@ -4,18 +4,18 @@
 RknnRet cgdd_engine::RknnInit(RknnDatas *pRknn) {
 	if(pRknn==nullptr) {return RKNN_ERR ;}
 	//1、辅助模型数据
-//	memcpy(&m_rknnData, pRknn,sizeof(RknnDatas));
+//	memcpy(&rknn_data, pRknn,sizeof(RknnDatas));
     m_rknnData = *pRknn;
 	// 模型输入尺寸
-//	int MODEL_INPUT_SIZE =m_rknnData.inputSize;
+//	int MODEL_INPUT_SIZE =rknn_data.inputSize;
 //	// 模型识别类个数
-//	int NUM_CLASS = m_rknnData.numClass;
+//	int NUM_CLASS = rknn_data.numClass;
 
 	GddiRet ret;
 
 	//1 模型对应的 config 文件，共达地为 ./alg_config.json  文件-------------------------------------------------------------------
-//	printf("Loading CONF_FILE_PATH %s ...\n",m_rknnData.priboxPath.c_str());
-//	printf("Loading MODLE_PATH %s ...\n",m_rknnData.modelPath.c_str());
+//	printf("Loading CONF_FILE_PATH %s ...\n",rknn_data.priboxPath.c_str());
+//	printf("Loading MODLE_PATH %s ...\n",rknn_data.modelPath.c_str());
 
 	//2 共达地模型初始化识别引擎
 //	m_alg_impl = new AlgImpl();

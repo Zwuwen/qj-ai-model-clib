@@ -86,7 +86,7 @@ RknnRet check_model_info(RknnDatas *pRknn) {
 
 
 RknnRet struct_to_cJSON(char **json_string, const char *filePath, detect_result_group_t Det, char *taskID) {
-    if ((json_string == NULL) || (Det.count == 0) || filePath == NULL || taskID == NULL) {
+    if ((json_string == nullptr) || (Det.count == 0) || filePath == nullptr || taskID == nullptr) {
         printf("%s: input is invalid", __func__);
     }
 
@@ -138,25 +138,25 @@ RknnRet struct_to_cJSON(char **json_string, const char *filePath, detect_result_
 
 //=================================================================================================
 rknn_ai::rknn_ai(char *modelUrl, float threshold) {
-    m_rknnData.modelDir = modelUrl;
-    m_rknnData.threshold = threshold;
+    rknn_data.modelDir = modelUrl;
+    rknn_data.threshold = threshold;
 }
 
-rknn_ai::~rknn_ai() {
-
-}
+rknn_ai::~rknn_ai(){
+    delete event_result;
+};
 
 RknnRet rknn_ai::init_model_engine() {
     //1.get model info
     RknnRet ret = RKNN_ERR;
-    ret = get_model_info(&m_rknnData);
+    ret = get_model_info(&rknn_data);
     if (ret != RKNN_SUCCESS) {
         SPDLOG_ERROR("get model info is error");
         return ret;
     }
 
     //2.check model info
-    ret = check_model_info(&m_rknnData);
+    ret = check_model_info(&rknn_data);
     if (ret != RKNN_SUCCESS) {
         SPDLOG_ERROR("model info is error");
         return ret;
@@ -169,37 +169,37 @@ RknnRet rknn_ai::init_model_engine() {
     // 参考：https://blog.csdn.net/lzn211/article/details/109147985
 
     ret = RKNN_ERR;
-    printf("================modelAlgType: %s\r\n", m_rknnData.modelAlgType.c_str());
-    if (strcmp(m_rknnData.modelAlgType.c_str(), SSD) == 0) {
+    printf("================modelAlgType: %s\r\n", rknn_data.modelAlgType.c_str());
+    if (strcmp(rknn_data.modelAlgType.c_str(), SSD) == 0) {
         //m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cssd_engine());
         m_aiEngine_api.reset(new cssd_engine());
-        ret = m_aiEngine_api->RknnInit(&m_rknnData);
+        ret = m_aiEngine_api->RknnInit(&rknn_data);
     }
 
-    if (strcmp(m_rknnData.modelAlgType.c_str(), Yolo) == 0) {
+    if (strcmp(rknn_data.modelAlgType.c_str(), Yolo) == 0) {
         //m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cyolo_engine());
         m_aiEngine_api.reset(new cyolo_engine());
-        ret = m_aiEngine_api->RknnInit(&m_rknnData);
+        ret = m_aiEngine_api->RknnInit(&rknn_data);
     }
 
-    if (strcmp(m_rknnData.modelAlgType.c_str(), GddModel) == 0) {
+    if (strcmp(rknn_data.modelAlgType.c_str(), GddModel) == 0) {
 //		m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cgdd_engine());
         m_aiEngine_api.reset(new cgdd_engine());
-        ret = m_aiEngine_api->RknnInit(&m_rknnData);
+        ret = m_aiEngine_api->RknnInit(&rknn_data);
     }
 
-    if (strcmp(m_rknnData.modelAlgType.c_str(), HikangModel) == 0) {
+    if (strcmp(rknn_data.modelAlgType.c_str(), HikangModel) == 0) {
         //m_aiEngine_api = std::shared_ptr<aiEngine_api>(new chik_engine());
         m_aiEngine_api.reset(new chik_engine());
-        ret = m_aiEngine_api->RknnInit(&m_rknnData);
+        ret = m_aiEngine_api->RknnInit(&rknn_data);
     }
 
 //	// 内部算法
-    if (strcmp(m_rknnData.modelAlgType.c_str(), BuiltIn) == 0) {
-        if (strcmp(m_rknnData.modelPath.c_str(), BodyPosture) == 0) {
+    if (strcmp(rknn_data.modelAlgType.c_str(), BuiltIn) == 0) {
+        if (strcmp(rknn_data.modelPath.c_str(), BodyPosture) == 0) {
             //m_aiEngine_api = std::shared_ptr<aiEngine_api>(new cpose_engine());
             m_aiEngine_api.reset(new cpose_engine());
-            ret = m_aiEngine_api->RknnInit(&m_rknnData);
+            ret = m_aiEngine_api->RknnInit(&rknn_data);
         }
     }
 
@@ -210,8 +210,6 @@ char *rknn_ai::model_engine_inference(
         uint8_t *imageBuf, uint32_t imageBufSize, char *imageBufType, char *taskID, int width, int height
 ) {
     detect_result_group_t detect_result_group{};
-    cv::Mat image;      //the src image
-    cv::Mat inputImag;  //the image put into model
     if (strcmp(imageBufType, YUV420P) == 0) {
 //#define YUV_TEST
         cout << "start yuv" << endl;
@@ -244,127 +242,57 @@ char *rknn_ai::model_engine_inference(
             }
         }
 #endif
-        auto out_data = std::make_shared<std::array<uint8_t, 1920 * 1080 * 3>>();
-        out_spec.width = 1920;
-        out_spec.height = 1080;
+        const  uint32_t  out_data_size =  width * height * 3;
+        auto out_data = std::make_unique<uint8_t[]>(out_data_size);
+        out_spec.width = width;
+        out_spec.height = height;
         out_spec.pix_format = RK_FORMAT_BGR_888;
-        out_spec.data = out_data->data();
+        out_spec.data = out_data.get();
 
         auto start = chrono::system_clock::now();
         if (formatter.yuv_2_bgr(in_spec, out_spec)) {
             auto end = chrono::system_clock::now();
             auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
             SPDLOG_TRACE("yuv->bgr spends {} s",double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den);
-//            /** 写入BGR文件 */
-//            if(out_spec.data){
-//                cout<<"写入OUT_BGR.bin"<<endl;
-//               ofstream bgr_file ("OUT_BGR.bin", ios::out | ios::binary);
-//               bgr_file.write((char*)out_spec.data, 1920*1080*3);
-//            }
         } else {
             return nullptr;
         }
-
-        /*
-        m_aiEngine_api->Inferenct(out_spec, &detect_result_group, taskID);
-        if(detect_result_group.count>0){
-            // wrap input buffer
-            Mat img(out_spec.height, out_spec.width, CV_8UC3, (unsigned char*)out_spec.data);
-            image = img;
-        }
-        */
-
-        Mat img(out_spec.height, out_spec.width, CV_8UC3, (unsigned char *) out_spec.data);
-        image = img;
-        if (m_rknnData.inputSize != 0) {
-            cv::resize(image, inputImag, cv::Size(m_rknnData.inputSize, m_rknnData.inputSize), 0, 0, cv::INTER_LINEAR);
-        } else {
-            inputImag = image;
-        }
-        m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
-
-        char *JsonMessge = nullptr;
-        if (detect_result_group.count > 0) {
-            time_t nSeconds = 0;
-            time((time_t *) &nSeconds);
-            string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
-            printf("%s\r\n", saveFileName.c_str());
-            imwrite(saveFileName.c_str(), image);
-            SPDLOG_INFO("after write");
-            struct_to_cJSON(&JsonMessge, saveFileName.c_str(), detect_result_group, taskID);
-            SPDLOG_INFO("after json");
-        }
-        return JsonMessge;
-//        static int  write_flag = 0;
-//        if(detect_result_group.count>0){
-//            /** 写入BGR文件 */
-//            const int image_size = 1920*1080+(1920*1080>>1);
-//            if(out_spec.data){
-//                char bgr_file_name [64]={0};
-//                char yuv_file_name [64]={0};
-//                sprintf(bgr_file_name,"/data/OUT_BGR_%d.bin",write_flag);
-//                cout<<"写入:"<<bgr_file_name<<endl;
-//                ofstream bgr_file (bgr_file_name, ios::out | ios::binary);
-//                bgr_file.write((char*)out_spec.data, 1920*1080*3);
-//
-//                sprintf(yuv_file_name,"/data/OUT_YUV_%d.bin",write_flag);
-//                cout<<"写入:"<<yuv_file_name<<endl;
-//                ofstream yuv_file (yuv_file_name, ios::out | ios::binary);
-//                yuv_file.write((char*)in_spec.data, image_size);
-//                write_flag++;
-//            }
-//        }
+        Mat image(out_spec.height, out_spec.width, CV_8UC3, (unsigned char *) out_spec.data);
+        cv::Mat inputImag;  //the image put into model
+        detect(detect_result_group, image, inputImag, taskID);
     } else if (strcmp(imageBufType, JPG) == 0) {
         std::vector<char> vec_data(imageBuf, imageBuf + imageBufSize);
-        image = cv::imdecode(vec_data, CV_LOAD_IMAGE_COLOR);
-        //
-        cv::imwrite("test.jpg", image);
-        // 清空  vec_data
-//        std::vector<char>().swap(vec_data);
-        if (m_rknnData.inputSize != 0) {
-            cv::resize(image, inputImag, cv::Size(m_rknnData.inputSize, m_rknnData.inputSize), 0, 0, cv::INTER_LINEAR);
-        } else {
-            inputImag = image;
-        }
-        m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
-
-        char *JsonMessge = nullptr;
-        if (detect_result_group.count > 0) {
-            time_t nSeconds = 0;
-            time((time_t *) &nSeconds);
-            string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
-            printf("%s\r\n", saveFileName.c_str());
-            imwrite(saveFileName.c_str(), image);
-            SPDLOG_INFO("after write");
-            struct_to_cJSON(&JsonMessge, saveFileName.c_str(), detect_result_group, taskID);
-            SPDLOG_INFO("after json");
-        }
-        return JsonMessge;
+        Mat image = cv::imdecode(vec_data, CV_LOAD_IMAGE_COLOR);
+        cv::Mat inputImag;  //the image put into model
+        detect(detect_result_group, image, inputImag, taskID);
     }
-//    for (int i = 0; i < detect_result_group.count; i++) {
-//        int x1 = detect_result_group.results[i].box.left;
-//        int y1 = detect_result_group.results[i].box.top;
-//        int x2 = detect_result_group.results[i].box.right;
-//        int y2 = detect_result_group.results[i].box.bottom;
-//
-//        float prop = detect_result_group.results[i].prop;
-//        char *label = detect_result_group.results[i].name;
-//        SPDLOG_INFO("Detect result:({:4d}, {:4d}, {:4d}, {:4d}), {:4.2f}, {}",x1, y1, x2, y2, prop, label);
-//        //绘制
-//        //rectangle(image, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255, 255), 6);
-////        string temp = to_string(prop) + "_" + label;
-////		printf("draw result:%s\r\n",temp.c_str());
-//        //putText(image, temp.c_str(), Point(x1, y1 - 12), 1, 2, Scalar(0, 255, 0, 255));
-//    }
-
-
+    return event_result;
 }
+/**
+ * 检测上报识别事件
+ * @param detect_result_group
+ * @param image
+ * @param taskID
+ */
+void rknn_ai::detect(detect_result_group_t&detect_result_group , cv::Mat& image, cv::Mat& inputImag, char*taskID ) {
+    if (rknn_data.inputSize != 0) {
+        cv::resize(image, inputImag, cv::Size(rknn_data.inputSize, rknn_data.inputSize), 0, 0, cv::INTER_LINEAR);
+    } else {
+        inputImag = image;
+    }
+    m_aiEngine_api->Inferenct(image, inputImag, &detect_result_group, taskID);
 
-RknnRet rknn_ai::deInint_model_engine() {
-    RknnRet ret = RKNN_ERR;
-    //根据不同模型属性进行不同处理：模型初始化引擎
-    if (m_aiEngine_api)
-        ret = m_aiEngine_api->RknnDeinit();
-
-    return ret;
+    if (event_result){
+        cJSON_free(event_result);
+        event_result = nullptr;
+    }
+    if (detect_result_group.count > 0) {
+        time_t nSeconds = 0;
+        time(&nSeconds);
+        string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
+        SPDLOG_INFO("before save");
+        imwrite(saveFileName.c_str(), image);
+        struct_to_cJSON(&event_result, saveFileName.c_str(), detect_result_group, taskID);
+        SPDLOG_INFO("json size:{}", strlen(event_result));
+    }
 }

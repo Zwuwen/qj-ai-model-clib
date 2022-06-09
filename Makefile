@@ -66,7 +66,7 @@ all:${OBJ}
 
 
 %.o:%.cpp
-	$(CPP) -std=c++11 -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
+	$(CPP) -std=c++14 -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
 %.o:%.c
 	$(CC) -c $< -o $@ ${INCLUDEDIR}  ${CFLAGS}
 
