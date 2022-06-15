@@ -147,6 +147,7 @@ rknn_ai::~rknn_ai(){
 };
 
 RknnRet rknn_ai::init_model_engine() {
+    std::lock_guard<std::mutex> lk(vpu_lock_);
     //1.get model info
     RknnRet ret = RKNN_ERR;
     ret = get_model_info(&rknn_data);
@@ -209,13 +210,15 @@ RknnRet rknn_ai::init_model_engine() {
 char *rknn_ai::model_engine_inference(
         uint8_t *imageBuf, uint32_t imageBufSize, char *imageBufType, char *taskID, int width, int height
 ) {
+    if(!m_aiEngine_api){
+        SPDLOG_ERROR("m_aiEngine_api is null");
+    }
     detect_result_group_t detect_result_group{};
     if (strcmp(imageBufType, YUV420P) == 0) {
 //#define YUV_TEST
-        cout << "start yuv" << endl;
         pix_formatter &formatter = pix_formatter::get_formatter();
         if (!formatter.is_ready()) {
-            cout << "rga is not ready!" << endl;
+            SPDLOG_ERROR("rga is not ready");
             return nullptr;
         }
         ImageSpec in_spec, out_spec;
@@ -242,12 +245,10 @@ char *rknn_ai::model_engine_inference(
             }
         }
 #endif
-        const  uint32_t  out_data_size =  width * height * 3;
-        auto out_data = std::make_unique<uint8_t[]>(out_data_size);
         out_spec.width = width;
         out_spec.height = height;
         out_spec.pix_format = RK_FORMAT_BGR_888;
-        out_spec.data = out_data.get();
+        out_spec.data = bgr_buf;
 
         auto start = chrono::system_clock::now();
         if (formatter.yuv_2_bgr(in_spec, out_spec)) {
@@ -290,9 +291,7 @@ void rknn_ai::detect(detect_result_group_t&detect_result_group , cv::Mat& image,
         time_t nSeconds = 0;
         time(&nSeconds);
         string saveFileName = "/userdata/images/" + std::to_string(nSeconds) + "_" + std::to_string(rand()) + ".jpg";
-        SPDLOG_INFO("before save");
         imwrite(saveFileName.c_str(), image);
         struct_to_cJSON(&event_result, saveFileName.c_str(), detect_result_group, taskID);
-        SPDLOG_INFO("json size:{}", strlen(event_result));
     }
 }

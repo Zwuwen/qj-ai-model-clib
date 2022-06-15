@@ -27,8 +27,9 @@ public:
     RknnDatas rknn_data;
 private:
     std::shared_ptr<aiEngine_api> m_aiEngine_api;
-
     void detect(detect_result_group_t &detect_result_group, Mat &image, Mat &inputImag, char *taskID);
+    uint8_t bgr_buf[1920*1080*3]{};
+    std::mutex vpu_lock_{};
 protected:
     char *event_result{};
 public:

@@ -65,9 +65,9 @@ pix_formatter::~pix_formatter() {
 bool pix_formatter::alloc_buffer() {
     int ret= 0;
     /********** apply for src buffer and dst buffer **********/
-    ret = rkRga_.RkRgaGetAllocBuffer(&bo_src,  3840, 2176, 32);
+    ret = rkRga_.RkRgaGetAllocBuffer(&bo_src,  1920, 1080, 24);
     if(ret) return false;
-    ret = rkRga_.RkRgaGetAllocBuffer(&bo_dst, 3840, 2176, 32);
+    ret = rkRga_.RkRgaGetAllocBuffer(&bo_dst, 1920, 1080, 24);
     if(ret) return false;
 
     /********** map buffer_address to userspace **********/
@@ -92,11 +92,11 @@ bool pix_formatter::init_info_t() {
     clear_info_t();
     /********** get src_Fd **********/
     ret = rkRga_.RkRgaGetBufferFd(&bo_src, &src.fd);
-    printf("src.fd =%d \n", src.fd);
+//    printf("src.fd =%d \n", src.fd);
     if (ret) return false;
     /********** get dst_Fd **********/
     ret = rkRga_.RkRgaGetBufferFd(&bo_dst, &dst.fd);
-    printf("dst.fd =%d \n", dst.fd);
+//    printf("dst.fd =%d \n", dst.fd);
     if (ret) return false;
     return true;
 }
