@@ -123,7 +123,7 @@ class AILib:
                             resultData = json.loads(c_char_p(result).value)
                             print(resultData)
             count = count + 1
-            if count > 100:
+            if count > 2:
                 break
             # time.sleep(1)
 
@@ -131,10 +131,10 @@ class AILib:
 # ---------------------------------------------------------------------------------------
 if __name__ == '__main__':
     ai_clib = AILib()
-    for i in range(1):
+    for i in range(4):
         print("start=========================================================", i)
         # 1）初始化模型引擎
-        modelType = "yolo"  # gdd yolo ssd pose hik
+        modelType = "gdd"  # gdd yolo ssd pose hik
         threshold = c_float(1)
         threshold.value = 0.5
         print("creatModelEng")

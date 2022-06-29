@@ -1,4 +1,4 @@
-CROSS_COMPILE	?= aarch64-linux-
+CROSS_COMPILE	?= /home/dev/workspace/zxf/compile-env/host/bin/aarch64-linux-
 CC		= ${CROSS_COMPILE}gcc
 CPP		= ${CROSS_COMPILE}g++
 STRIP	= ${CROSS_COMPILE}strip
@@ -48,7 +48,7 @@ LDFLAGS	+= -Wl,-rpath,./lib -lpthread
 LDFLAGS	+= -lgddi_rockchip_sdk
 LDFLAGS	+= -lrga
 LDFLAGS	+= -ldrm
-SYS_ROOT_PATH = /home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/
+SYS_ROOT_PATH = /home/dev/workspace/zxf/compile-env/host/aarch64-buildroot-linux-gnu/sysroot/
 OBJ := $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/gdd/*.cpp))
 OBJ += $(patsubst %.cpp,%.o,$(wildcard ./modelEngine/hik/*.cpp))

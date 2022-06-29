@@ -76,6 +76,7 @@ extern "C" {
             return RKNN_ERR;
         } else {
             delete rknnEngine;
+            rknnEngine= nullptr;
             SPDLOG_TRACE("delete_rknn_model_engine return {}",RKNN_SUCCESS);
             return RKNN_SUCCESS;
         }
